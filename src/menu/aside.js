@@ -23,7 +23,7 @@ export default [
     ]
   },
   {
-    path: '/advertisement',
+    path: '/advert',
     title: '广告管理',
     icon: 'folder-o',
   },

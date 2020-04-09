@@ -74,25 +74,42 @@ const frameIn = [
         component: _import('system/function/redirect')
       },
       {
-        path: '/user',
+        path: 'user',
         name: 'user',
-        component: () => import('@/pages/page-demo/index'),
+        component: _import('page-demo/inde'),
         meta: {
           auth: true,
           title: 'lalal'
         }
       },
       {
-        path: '/advert',
+        path: 'advert',
         name: 'advert',
-        component: () => import('@/pages/page-demo/advert'),
+        component: _import('project-page/advert'),
         meta: {
-          auth: true,
-          title: '广告管理'
-        }
+           auth: true,
+           title: '广告管理'
+         }
       }
     ]
   }
+  // {
+  //   path: '/project',
+  //   name: 'project',
+  //   // component: layoutHeaderAside,
+  //   redirect: { name: 'advert' },
+  //   children:[
+  //     {
+  //       path: 'advert',
+  //       name: 'advert',
+  //        meta: {
+  //          auth: true,
+  //          title: '广告管理'
+  //        },
+  //       component: () => import('@/pages/project-page/advert')
+  //     },
+  //   ]
+  // }
 ]
 
 /**

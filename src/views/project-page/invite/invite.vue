@@ -1,7 +1,8 @@
 <template>
   <d2-container>
     <template slot="header">header</template>
-    Fuck World
+    邀请管理
     <template slot="footer">footer</template>
   </d2-container>
 </template>
+
