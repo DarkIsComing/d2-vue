@@ -74,18 +74,9 @@ const frameIn = [
         component: _import('system/function/redirect')
       },
       {
-        path: 'user',
-        name: 'user',
-        component: _import('page-demo/inde'),
-        meta: {
-          auth: true,
-          title: 'lalal'
-        }
-      },
-      {
         path: 'advert',
         name: 'advert',
-        component: _import('project-page/advert'),
+        component: _import('pages/advert'),
         meta: {
            auth: true,
            title: '广告管理'
