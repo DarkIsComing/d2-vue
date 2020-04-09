@@ -85,7 +85,7 @@ const frameIn = [
       {
         path: '/advert',
         name: 'advert',
-        component: () => import('@/pages/project-page/advert'),
+        component: () => import('@/pages/page-demo/advert'),
         meta: {
           auth: true,
           title: '广告管理'
