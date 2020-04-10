@@ -74,9 +74,81 @@ const frameIn = [
         component: _import('system/function/redirect')
       },
       {
+        path: 'user',
+        name: 'user',
+        component: _import('pages/user'),
+        meta: {
+          auth: true,
+          title: '用户管理'
+        }
+      },
+      {
+        path: 'resourceList',
+        name: 'resourceList',
+        component: _import('pages/resource/list'),
+        meta: {
+          auth: true,
+          title: '资源列表'
+        }
+      },
+      {
+        path: 'resourceRecommend',
+        name: 'resourceRecommend',
+        component: _import('pages/resource/recommend'),
+        meta: {
+          auth: true,
+          title: '资源推荐'
+        }
+      },
+      {
+        path: 'order',
+        name: 'order',
+        component: _import('pages/order'),
+        meta: {
+          auth: true,
+          title: '订单管理'
+        }
+      },
+      {
         path: 'advert',
         name: 'advert',
         component: _import('pages/advert'),
+        meta: {
+          auth: true,
+          title: '广告管理'
+        }
+      },
+      {
+        path: 'cash',
+        name: 'cash',
+        component: _import('pages/cash'),
+        meta: {
+          auth: true,
+          title: '提现管理'
+        }
+      },
+      {
+        path: 'transmit',
+        name: 'transmit',
+        component: _import('pages/transmit'),
+        meta: {
+          auth: true,
+          title: '转发有奖'
+        }
+      },
+      {
+        path: 'invite',
+        name: 'invite',
+        component: _import('pages/invite'),
+        meta: {
+          auth: true,
+          title: '邀请记录'
+        }
+      },
+      {
+        path: 'chat',
+        name: 'chat',
+        component: _import('pages/chat/customer'),
         meta: {
           auth: true,
           title: '客户聊天'
