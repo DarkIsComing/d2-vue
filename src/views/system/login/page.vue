@@ -54,8 +54,9 @@
                     type="text"
                     v-model="formLogin.code"
                     placeholder="验证码">
+                    <i slot="prefix" class="icon-yanzhengma yanzhengma" style=""></i>
+                    <template  slot="append"><span  @click="getcode" class="msg-text" :class="[{display:msgKey}]">{{msgText}}</span></template>
                   </el-input>
-                  <!-- <el-button type="primary" class="el-button el-button--primary el-button--default el-button--small" @click="getCode"><span>获取验证码</span></el-button> -->
                 </el-form-item>
                 <el-button
                   size="default"
@@ -71,10 +72,6 @@
               flex="main:justify cross:center">
               <span><d2-icon name="question-circle"/> 忘记密码</span>
             </p>
-            <!-- quick login -->
-            <!-- <el-button class="page-login--quick" size="default" type="info" @click="dialogVisible = true">
-              快速选择用户（测试功能）
-            </el-button> -->
           </div>
         </div>
         <div class="page-login--content-footer">
@@ -102,57 +99,47 @@
         </div>
       </div>
     </div>
-    <!-- <el-dialog
-      title="快速选择用户"
-      :visible.sync="dialogVisible"
-      width="400px">
-      <el-row :gutter="10" style="margin: -20px 0px -10px 0px;">
-        <el-col v-for="(user, index) in users" :key="index" :span="8">
-          <div class="page-login--quick-user" @click="handleUserBtnClick(user)">
-            <d2-icon name="user-circle-o"/>
-            <span>{{user.name}}</span>
-          </div>
-        </el-col>
-      </el-row>
-    </el-dialog> -->
   </div>
 </template>
 
 <script>
 import dayjs from 'dayjs'
 import { mapActions } from 'vuex'
+import { isvalidatemobile } from '@/utils/validate'
 import localeMixin from '@/locales/mixin.js'
+const MSGINIT = '发送验证码'
+// const MSGERROR = '验证码发送失败'
+const MSGSCUCCESS = 'time秒后重发'
+const MSGTIME = 60
 export default {
   mixins: [
     localeMixin
   ],
   data () {
+    const validatePhone = (rule, value, callback) => {
+      if (isvalidatemobile(value)[0]) {
+        callback(new Error(isvalidatemobile(value)[1]))
+      } else {
+        callback()
+      }
+    }
+    const validateCode = (rule, value, callback) => {
+      if (value.length !== 6) {
+        callback(new Error('请输入6位数的验证码'))
+      } else {
+        callback()
+      }
+    }
     return {
+      msgText: MSGINIT,
+      msgTime: MSGTIME,
+      msgKey: false,
       timeInterval: null,
       time: dayjs().format('HH:mm:ss'),
-      // 快速选择用户
-      // dialogVisible: false,
-      // users: [
-      //   {
-      //     name: 'Admin',
-      //     username: 'admin',
-      //     password: 'admin'
-      //   },
-      //   {
-      //     name: 'Editor',
-      //     username: 'editor',
-      //     password: 'editor'
-      //   },
-      //   {
-      //     name: 'User1',
-      //     username: 'user1',
-      //     password: 'user1'
-      //   }
-      // ],
       // 表单
       formLogin: {
-        username: '',
-        password: '',
+        username: '13526872093',
+        password: '111111',
         code: ''
       },
       // 表单校验
@@ -160,22 +147,24 @@ export default {
         username: [
           {
             required: true,
-            message: '请输入用户名',
-            trigger: 'blur'
+            message: '请输入正确的用户名',
+            trigger: 'blur',
+            validator: validatePhone
           }
         ],
         password: [
           {
             required: true,
-            message: '请输入密码',
+            message: '请输入正确的密码',
             trigger: 'blur'
           }
         ],
         code: [
           {
             required: true,
-            message: '请输入验证码',
-            trigger: 'blur'
+            message: '请输入正确的验证码',
+            trigger: 'blur',
+            validator: validateCode
           }
         ]
       }
@@ -191,20 +180,11 @@ export default {
   },
   methods: {
     ...mapActions('d2admin/account', [
-      'login'
+      'login', 'getCode'
     ]),
     refreshTime () {
       this.time = dayjs().format('HH:mm:ss')
     },
-    // /**
-    //  * @description 接收选择一个用户快速登录的事件
-    //  * @param {Object} user 用户信息
-    //  */
-    // handleUserBtnClick (user) {
-    //   this.formLogin.username = user.username
-    //   this.formLogin.password = user.password
-    //   this.submit()
-    // },
     /**
      * @description 提交表单
      */
@@ -213,58 +193,46 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           // 登录
-          // 注意 这里的演示没有传验证码
-          // 具体需要传递的数据请自行修改代码
-          this.$store.dispatch('d2admin/account/login', {
+          this.login({
             username: this.formLogin.username,
-            password: this.formLogin.password
+            password: this.formLogin.password,
+            token: this.formLogin.code
           })
             .then(() => {
               // 重定向对象不存在则返回顶层路径
               this.$router.replace(this.$route.query.redirect || '/')
             })
-          // this.login({
-          //   username: this.formLogin.username,
-          //   password: this.formLogin.password
-          // })
-          //   .then(() => {
-          //     // 重定向对象不存在则返回顶层路径
-          //     this.$router.replace(this.$route.query.redirect || '/')
-          //   })
         } else {
           // 登录表单校验失败
-          this.$message.error('表单校验失败，请检查')
+          this.$message.error('填写错误,请认真填写!')
         }
       })
+    },
+    // 获取验证码
+    getcode () {
+          const phone = this.formLogin.username
+          if (isvalidatemobile(phone)[0]) {
+            this.$message.error('填写错误,请认真填写!')
+          } else {
+            this.getCode({
+              phone: this.formLogin.username
+            })
+              .then(() => {
+                this.msgText = MSGSCUCCESS.replace('time', this.msgTime)
+                this.msgKey = true
+                const time = setInterval(() => {
+                  this.msgTime--
+                  this.msgText = MSGSCUCCESS.replace('time', this.msgTime)
+                  if (this.msgTime === 0) {
+                    this.msgTime = MSGTIME
+                    this.msgText = MSGINIT
+                    this.msgKey = false
+                    clearInterval(time)
+                  }
+                }, 1000)
+              })
+          }
     }
-    // getCode () {
-    //   this.$refs.loginForm.validate((valid) => {
-    //     if (valid) {
-    //       // 登录
-    //       // 注意 这里的演示没有传验证码
-    //       // 具体需要传递的数据请自行修改代码
-    //       this.$store.dispatch('d2admin/account/login', {
-    //         username: this.formLogin.username,
-    //         password: this.formLogin.password
-    //       })
-    //         .then(() => {
-    //           // 重定向对象不存在则返回顶层路径
-    //           this.$router.replace(this.$route.query.redirect || '/')
-    //         })
-    //       // this.login({
-    //       //   username: this.formLogin.username,
-    //       //   password: this.formLogin.password
-    //       // })
-    //       //   .then(() => {
-    //       //     // 重定向对象不存在则返回顶层路径
-    //       //     this.$router.replace(this.$route.query.redirect || '/')
-    //       //   })
-    //     } else {
-    //       // 登录表单校验失败
-    //       this.$message.error('表单校验失败，请检查')
-    //     }
-    //   })
-    // }
   }
 }
 </script>
@@ -350,30 +318,21 @@ export default {
     //   width: 100%;
     // }
   }
-  // 快速选择用户面板
-  // .page-login--quick-user {
-  //   @extend %flex-center-col;
-  //   padding: 10px 0px;
-  //   border-radius: 4px;
-  //   &:hover {
-  //     background-color: $color-bg;
-  //     i {
-  //       color: $color-text-normal;
-  //     }
-  //     span {
-  //       color: $color-text-normal;
-  //     }
-  //   }
-  //   i {
-  //     font-size: 36px;
-  //     color: $color-text-sub;
-  //   }
-  //   span {
-  //     font-size: 12px;
-  //     margin-top: 10px;
-  //     color: $color-text-sub;
-  //   }
-  // }
+  // 验证码
+  .yanzhengma{
+    display:block;
+    margin-top: 8px;
+  }
+  .msg-text {
+    display: block;
+    width: 60px;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .msg-text.display {
+    color: #ccc;
+  }
   // footer
   .page-login--content-footer {
     padding: 1em 0;
