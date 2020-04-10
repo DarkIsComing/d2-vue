@@ -10,15 +10,15 @@ export default [
     title: '资源管理',
     icon: 'folder-o',
     children: [
-      { path: '/page1', title: '资源推荐' },
-      { path: '/page2', title: '资源列表' }
+      { path: '/resourceRecommend', title: '资源推荐' },
+      { path: '/resourceList', title: '资源列表' }
     ]
   },
   {
     title: '订单管理',
     icon: 'folder-o',
     children: [
-      { path: '/page2', title: '订单列表' }
+      { path: '/order', title: '订单列表' }
     ]
   },
   {
@@ -45,13 +45,47 @@ export default [
     title: '聊天管理',
     icon: 'folder-o',
     children: [
-      { path: '/page1', title: '客户聊天' },
-      { path: '/page2', title: '活动群聊' }
+      { path: '/chat', title: '客户聊天' },
+      { path: '/group', title: '活动群聊' }
     ]
   },
   {
     path: '/report',
     title: '举报管理',
+    icon: 'folder-o'
+  },
+  {
+    path: '/sign',
+    title: '签到管理',
+    icon: 'folder-o'
+  },
+  {
+    path: '/car',
+    title: '拼车管理',
+    icon: 'folder-o'
+  },
+  {
+    path: '/help',
+    title: '企业助手',
+    icon: 'folder-o'
+  },
+  {
+    path: '/keyword',
+    title: '关键词管理',
+    icon: 'folder-o'
+  },
+  {
+    title: '平台管理',
+    icon: 'folder-o',
+    children: [
+      { path: '/manager', title: '管理员列表' },
+      { path: '/message', title: '消息管理' },
+      { path: '/name', title: '实名认证' },
+    ]
+  },
+  {
+    path: '/settings',
+    title: '平台设置',
     icon: 'folder-o'
   }
 ]

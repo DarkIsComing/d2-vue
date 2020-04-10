@@ -76,40 +76,176 @@ const frameIn = [
       {
         path: '/user',
         name: 'user',
-        component: () => import('@/views/pages/user'),
+        component: _import('pages/user'),
         meta: {
           auth: true,
           title: '用户管理'
         }
       },
       {
+        path: 'resourceList',
+        name: 'resourceList',
+        component: _import('pages/resource/list'),
+        meta: {
+          auth: true,
+          title: '资源列表'
+        }
+      },
+      {
+        path: 'resourceRecommend',
+        name: 'resourceRecommend',
+        component: _import('pages/resource/recommend'),
+        meta: {
+          auth: true,
+          title: '资源推荐'
+        }
+      },
+      {
+        path: 'order',
+        name: 'order',
+        component: _import('pages/order'),
+        meta: {
+          auth: true,
+          title: '订单管理'
+        }
+      },
+      {
         path: '/advert',
         name: 'advert',
-        component: () => import('@/views/pages/advert'),
+        component: _import('pages/advert'),
         meta: {
-           auth: true,
-           title: '广告管理'
-         }
+          auth: true,
+          title: '广告管理'
+        }
+      },
+      {
+        path: 'cash',
+        name: 'cash',
+        component: _import('pages/cash'),
+        meta: {
+          auth: true,
+          title: '提现管理'
+        }
+      },
+      {
+        path: 'transmit',
+        name: 'transmit',
+        component: _import('pages/transmit'),
+        meta: {
+          auth: true,
+          title: '转发有奖'
+        }
+      },
+      {
+        path: 'invite',
+        name: 'invite',
+        component: _import('pages/invite'),
+        meta: {
+          auth: true,
+          title: '邀请记录'
+        }
+      },
+      {
+        path: 'chat',
+        name: 'chat',
+        component: _import('pages/chat/customer'),
+        meta: {
+          auth: true,
+          title: '客户聊天'
+        }
+      },
+      {
+        path: 'group',
+        name: 'group',
+        component: _import('pages/chat/group'),
+        meta: {
+          auth: true,
+          title: '活动群聊'
+        }
+      },
+      {
+        path: 'report',
+        name: 'report',
+        component: _import('pages/report'),
+        meta: {
+          auth: true,
+          title: '举报管理'
+        }
+      },
+      {
+        path: 'sign',
+        name: 'sign',
+        component: _import('pages/sign'),
+        meta: {
+          auth: true,
+          title: '签到管理'
+        }
+      },
+      {
+        path: 'car',
+        name: 'car',
+        component: _import('pages/car'),
+        meta: {
+          auth: true,
+          title: '拼车管理'
+        }
+      },
+      {
+        path: 'help',
+        name: 'help',
+        component: _import('pages/help'),
+        meta: {
+          auth: true,
+          title: '企业助手'
+        }
+      },
+      {
+        path: 'keyword',
+        name: 'keyword',
+        component: _import('pages/keyword'),
+        meta: {
+          auth: true,
+          title: '关键字管理'
+        }
+      },
+      {
+        path: 'manager',
+        name: 'Pmanager',
+        component: _import('pages/platform/manager'),
+        meta: {
+          auth: true,
+          title: '管理员列表'
+        }
+      },
+      {
+        path: 'message',
+        name: 'Pmessage',
+        component: _import('pages/platform/message'),
+        meta: {
+          auth: true,
+          title: '消息管理'
+        }
+      },
+      {
+        path: 'name',
+        name: 'Pname',
+        component: _import('pages/platform/name'),
+        meta: {
+          auth: true,
+          title: '实名认证'
+        }
+      },
+      {
+        path: 'settings',
+        name: 'settings',
+        component: _import('pages/settings'),
+        meta: {
+          auth: true,
+          title: '平台设置'
+        }
       }
     ]
   }
-  // {
-  //   path: '/project',
-  //   name: 'project',
-  //   // component: layoutHeaderAside,
-  //   redirect: { name: 'advert' },
-  //   children:[
-  //     {
-  //       path: 'advert',
-  //       name: 'advert',
-  //        meta: {
-  //          auth: true,
-  //          title: '广告管理'
-  //        },
-  //       component: () => import('@/pages/project-page/advert')
-  //     },
-  //   ]
-  // }
 ]
 
 /**

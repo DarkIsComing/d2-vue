@@ -1,7 +1,7 @@
 <template>
   <d2-container>
     <template slot="header">header</template>
-    广告
+    辅助管理
     <template slot="footer">footer</template>
   </d2-container>
 </template>
