@@ -1,11 +1,18 @@
 // Vue
 import Vue from 'vue'
+import VCharts from 'v-charts'
 import i18n from './i18n'
 import App from './App'
 // 核心插件
 import d2Admin from '@/plugin/d2admin'
 // store
 import store from '@/store/index'
+
+// D2CRUD
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import D2Crud from '@d2-projects/d2-crud'
+import pluginExport from '@d2-projects/vue-table-export'
 
 // 菜单和路由设置
 import router from './router'
@@ -15,6 +22,10 @@ import { frameInRoutes } from '@/router/routes'
 
 // 核心插件
 Vue.use(d2Admin)
+Vue.use(VCharts)
+Vue.use(ElementUI)
+Vue.use(D2Crud)
+Vue.use(pluginExport)
 
 new Vue({
   router,

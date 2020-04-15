@@ -5,4 +5,3 @@
     <template slot="footer">footer</template>
   </d2-container>
 </template>
-
