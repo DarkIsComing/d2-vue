@@ -80,7 +80,7 @@ export default [
     children: [
       { path: '/manager', title: '管理员列表' },
       { path: '/message', title: '消息管理' },
-      { path: '/name', title: '实名认证' },
+      { path: '/name', title: '实名认证' }
     ]
   },
   {
