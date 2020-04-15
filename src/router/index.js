@@ -43,10 +43,9 @@ router.beforeEach(async (to, from, next) => {
   store.commit('d2admin/search/set', false)
   // 验证当前路由所有的匹配中是否需要有登录验证的
   if (to.matched.some(r => r.meta.auth)) {
-    next()
-    // 这里暂时将cookie里是否存有token作为验证是否登录的条件
-    // 请根据自身业务需要修改
-    // const token = util.cookies.get('toksessionen')
+    // // 这里暂时将cookie里是否存有token作为验证是否登录的条件
+    // // 请根据自身业务需要修改
+    // const token = util.cookies.get('token')
     // if (token && token !== 'undefined') {
     //   next()
     // } else {
@@ -61,6 +60,7 @@ router.beforeEach(async (to, from, next) => {
     //   // https://github.com/d2-projects/d2-admin/issues/138
     //   NProgress.done()
     // }
+    next()
   } else {
     // 不需要身份校验 直接通过
     next()
