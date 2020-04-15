@@ -4,88 +4,88 @@ export default [
   {
     path: '/user',
     title: '用户管理',
-    icon: 'folder-o'
+    icon: 'user'
   },
   {
     title: '资源管理',
-    icon: 'folder-o',
+    icon: 'shopping-bag',
     children: [
-      { path: '/resourceRecommend', title: '资源推荐' },
-      { path: '/resourceList', title: '资源列表' }
+      { path: '/resourceRecommend', icon: 'share', title: '资源推荐' },
+      { path: '/resourceList', icon: 'reorder', title: '资源列表' }
     ]
   },
   {
     title: '订单管理',
-    icon: 'folder-o',
+    icon: 'shopping-cart',
     children: [
-      { path: '/order', title: '订单列表' }
+      { path: '/order', icon: 'shopping-cart', title: '订单列表' }
     ]
   },
   {
     path: '/advert',
     title: '广告管理',
-    icon: 'folder-o'
+    icon: 'television'
   },
   {
     path: '/cash',
     title: '提现管理',
-    icon: 'folder-o'
+    icon: 'rmb'
   },
   {
     path: '/transmit',
     title: '转发有奖',
-    icon: 'folder-o'
+    icon: 'trophy'
   },
   {
     path: '/invite',
     title: '邀请记录',
-    icon: 'folder-o'
+    icon: 'phone'
   },
   {
     title: '聊天管理',
-    icon: 'folder-o',
+    icon: 'commenting-o',
     children: [
-      { path: '/chat', title: '客户聊天' },
-      { path: '/group', title: '活动群聊' }
+      { path: '/chat', icon: 'comment-o', title: '客户聊天' },
+      { path: '/group', icon: 'comments-o', title: '活动群聊' }
     ]
   },
   {
     path: '/report',
     title: '举报管理',
-    icon: 'folder-o'
+    icon: 'circle'
   },
   {
     path: '/sign',
     title: '签到管理',
-    icon: 'folder-o'
+    icon: 'archive'
   },
   {
     path: '/car',
     title: '拼车管理',
-    icon: 'folder-o'
+    icon: 'taxi'
   },
   {
     path: '/help',
     title: '企业助手',
-    icon: 'folder-o'
+    icon: 'support'
   },
   {
     path: '/keyword',
     title: '关键词管理',
-    icon: 'folder-o'
+    icon: 'asterisk'
   },
   {
     title: '平台管理',
-    icon: 'folder-o',
+    icon: 'map',
     children: [
-      { path: '/manager', title: '管理员列表' },
-      { path: '/message', title: '消息管理' },
-      { path: '/name', title: '实名认证' }
+      { path: '/manager', icon: 'user-circle-o', title: '管理员列表' },
+      { path: '/message', icon: 'comment-o', title: '消息管理' },
+      { path: '/name', icon: 'vcard-o', title: '实名认证' }
     ]
   },
   {
     path: '/settings',
     title: '平台设置',
-    icon: 'folder-o'
+    icon: 'cog'
   }
 ]
