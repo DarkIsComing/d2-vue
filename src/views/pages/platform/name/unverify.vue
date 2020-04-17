@@ -1,49 +1,9 @@
 <template>
-  <d2-container>
-    <template slot="header">
-      <el-button slot="header"
-                 style="margin-bottom: 5px"
-                 @click="exportExcel">导出</el-button>
-
-      <el-button slot="header"
-                 style="margin-bottom: 5px"
-                 @click="stop">停用</el-button>
-      <span class="demonstration"
-            slot="header"
-            style="margin-bottom: 5px">订单生成时间</span>
-      <el-date-picker v-model="value2"
-                      type="daterange"
-                      value-format="yyyy-MM-dd"
-                      align="right"
-                      slot="header"
-                      unlink-panels
-                      range-separator="-"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期"
-                      :picker-options="pickerOptions">
-      </el-date-picker>
-      <span class="demonstration"
-            slot="header"
-            style="margin-bottom: 5px">需求方/供给方</span>
-      <el-input slot="header"
-                style="margin-bottom: 5px"
-                v-model="input"
-                placeholder="请输入需求方/供给方">
-
-      </el-input>
-      <el-button slot="header"
-                 style="margin-bottom: 5px"
-                 type="primary"
-                 @click="query">查询</el-button>
-      <el-button slot="header"
-                 type="info"
-                 style="margin-bottom: 5px"
-                 @click="reset">重置</el-button>
-    </template>
+  <div class="child1">
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
-             add-title="新增广告"
+             add-title="待审核"
              :add-template="addTemplate"
              :form-options="formOptions"
              @dialog-open="handleDialogOpen"
@@ -55,70 +15,94 @@
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
              :rowHandle="rowHandle"
-             @custom-emit-1="handleCustomEvent"
+             @row-remove="handleRowRemove"
+             @custom-emit-1="viewDetail"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
              :options="options">
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
+                 @click="exportExcel">导出</el-button>
+      <span class="demonstration"
+            slot="header"
+            style="margin-bottom: 5px">申请时间</span>
+      <el-date-picker v-model="value2"
+                      type="daterange"
+                      align="right"
+                      value-format="yyyy-MM-dd"
+                      slot="header"
+                      unlink-panels
+                      range-separator="-"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      :picker-options="pickerOptions">
+      </el-date-picker>
+      <span class="demonstration"
+            slot="header"
+            style="margin-bottom: 5px">用户昵称</span>
+      <el-input slot="header"
+                style="margin-bottom: 5px"
+                v-model="input"
+                placeholder="请输入用户昵称">
+
+      </el-input>
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
+                 type="primary"
+                 @click="query">查询</el-button>
+      <el-button slot="header"
+                 type="info"
+                 style="margin-bottom: 5px"
+                 @click="reset">重置</el-button>
     </d2-crud>
     <myImg></myImg>
-  </d2-container>
+  </div>
 </template>
 
 <script>
-import { getOrderList } from '@api/order'
-import myImg from '../../../components/myCom/tableImg'
+import { getIdcardList } from '@api/name'
+import myImg from '../../../../components/myCom/tableImg'
 export default {
-  components: {
-    myImg
-  },
+  name: 'child1',
   data () {
     return {
       input: '',
       columns: [
         {
-          title: '订单生成时间',
+          title: '申请时间',
           key: 'create_time',
           width: '180',
           sortable: true
         },
         {
-          title: '订单编号',
-          key: 'free',
-          width: '180'
+          title: '用户头像',
+          key: 'user_image',
+          width: '180',
+          component: {
+            name: myImg
+          }
         },
         {
-          title: '需求方昵称',
-          key: 'amount'
-        },
-        {
-          title: '供给方昵称',
+          title: '用户昵称',
           key: 'use_name'
         },
         {
-          title: '交易金额',
-          key: 'username'
+          title: '认证类别',
+          key: 'check_status'
         }
       ],
       outCoulum: [
         {
-          label: '订单生成时间',
+          label: '申请时间',
           prop: 'create_time'
         },
         {
-          label: '订单编号',
-          prop: 'free'
-        },
-        {
-          label: '需求方昵称',
-          prop: 'amount'
-        },
-        {
-          label: '供给方昵称',
+          label: '用户昵称',
           prop: 'use_name'
         },
         {
-          label: '交易金额',
-          prop: 'username'
+          label: '认证类别',
+          prop: 'check_status'
         }
       ],
       data: [],
@@ -147,17 +131,11 @@ export default {
         custom: [
           {
             text: '查看详情',
-            type: 'primary ',
+            type: 'primary',
             size: 'small',
             emit: 'custom-emit-1'
           }
-        ],
-        remove: {
-          icon: 'el-icon-delete',
-          size: 'small',
-          fixed: 'right',
-          confirm: true
-        }
+        ]
       },
       pickerOptions: {
         shortcuts: [{
@@ -199,15 +177,16 @@ export default {
       this.fetchData(currentPage)
     },
     fetchData (currentPage) {
+      console.log('当前页:', currentPage)
       this.loading = true
-      getOrderList({
+      getIdcardList({
         'start_time': '',
         'end_time': '',
         'item': '',
         'page': currentPage,
-        'size': 20
+        'size': 20,
+        'status': 1
       }).then(response => {
-        console.log('分页返回的数据', currentPage, response.data)
         this.data = response.data
         this.pagination.total = response.count
         this.loading = false
@@ -221,7 +200,7 @@ export default {
       this.$export.excel({
         columns: this.outCoulum,
         data: this.data,
-        header: '邀请记录列表'
+        header: '待审核列表'
 
       })
         .then(() => {
@@ -229,16 +208,22 @@ export default {
           this.$message('导出表格成功')
         })
     },
+    viewDetail ({ index, row }) {
+      this.$router.push({ name: 'detail', query: { 'id': row.id } })
+      console.log(index, row)
+    },
     query (item) {
-      getOrderList({
+      getIdcardList({
         'start_time': this.value2[0],
         'end_time': this.value2[1],
         'item': this.input,
         'page': 1,
-        'size': 20
+        'size': 20,
+        'status': 1
       })
         .then(response => {
           this.data = response.data
+          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -247,15 +232,17 @@ export default {
     reset () {
       this.input = ''
       this.value2 = ''
-      getOrderList({
+      getIdcardList({
         'start_time': '',
         'end_time': '',
         'item': this.input,
         'page': 1,
-        'size': 20
+        'size': 20,
+        'status': 1
       })
         .then(response => {
           this.data = response.data
+          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -272,14 +259,17 @@ export default {
       })
     }
   },
-
+  components: {
+    myImg
+  },
   mounted: function () {
-    getOrderList({
+    getIdcardList({
       'start_time': '',
       'end_time': '',
       'item': '',
       'page': 1,
-      'size': 20
+      'size': 20,
+      'status': 1
     })
       .then(response => {
         this.data = response.data
@@ -290,6 +280,7 @@ export default {
   }
 }
 </script>
+
 
 <style>
 .el-table .warning-row {

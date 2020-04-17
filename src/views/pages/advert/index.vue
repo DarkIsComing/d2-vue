@@ -1,91 +1,146 @@
 <template>
-  <div>
-    <d2-crud
-      ref="d2Crud"
-      :columns="columns"
-      :data="data"
-      add-title="新增广告"
-      :add-template="addTemplate"
-      :form-options="formOptions"
-      @dialog-open="handleDialogOpen"
-      @row-add="handleRowAdd"
-      @dialog-cancel="handleDialogCancel">
-      <el-button slot="header" style="margin-bottom: 5px" @click="addRow">新增</el-button>
-      :loading="loading"
-      :loading-options="loadingOptions"
-      selection-row
-      @current-change="handleCurrentChange"
-      :options="options"
-      >
-      <el-input slot="header" placeholder="请输入内容" style="margin-bottom: 5px">
-        <template slot="prepend">Http://</template>
-        <template slot="append">.com</template>
+  <d2-container>
+    <template slot="header">
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
+                 @click="exportExcel">导出</el-button>
+
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
+                 @click="stop">停用</el-button>
+      <span class="demonstration"
+            slot="header"
+            style="margin-bottom: 5px">创建时间</span>
+      <el-date-picker v-model="value2"
+                      type="daterange"
+                      align="right"
+                      value-format="yyyy-MM-dd"
+                      slot="header"
+                      unlink-panels
+                      range-separator="-"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      :picker-options="pickerOptions">
+      </el-date-picker>
+      <span class="demonstration"
+            slot="header"
+            style="margin-bottom: 5px">广告ID/标题关键字</span>
+      <el-input slot="header"
+                style="margin-bottom: 5px"
+                v-model="input"
+                placeholder="请输入广告ID/标题关键字">
+
       </el-input>
-      <el-button slot="header" type="primary" round style="margin-bottom: 5px">+ 新增广告</el-button>
-      </d2-crud>
-  </div>
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
+                 type="primary"
+                 @click="query">查询</el-button>
+      <el-button slot="header"
+                 type="info"
+                 style="margin-bottom: 5px"
+                 @click="reset">重置</el-button>
+    </template>
+    <d2-crud ref="d2Crud"
+             :columns="columns"
+             :data="data"
+             add-title="新增广告"
+             :add-template="addTemplate"
+             :form-options="formOptions"
+             @dialog-open="handleDialogOpen"
+             @row-add="handleRowAdd"
+             @dialog-cancel="handleDialogCancel"
+             :loading="loading"
+             :loading-options="loadingOptions"
+             selection-row
+             @selection-change="handleSelectionChange"
+             @current-change="handleCurrentChange"
+             :rowHandle="rowHandle"
+             @row-remove="handleRowRemove"
+             @custom-emit-1="handleCustomEvent"
+             :pagination="pagination"
+             @pagination-current-change="paginationCurrentChange"
+             :options="options">
+    </d2-crud>
+    <myImg></myImg>
+  </d2-container>
 </template>
 
 <script>
-
+import { getAdvertList, deleteAdvert } from '@api/advert'
+import myImg from '../../../components/myCom/tableImg'
 export default {
+  components: {
+    myImg
+  },
   data () {
     return {
+      input: '',
       columns: [
         {
-          title: '日期',
-          key: 'date',
+          title: 'ID',
+          key: 'create_time',
           width: '180',
           sortable: true
         },
         {
-          title: '姓名',
-          key: 'name',
+          title: '创建时间',
+          key: 'create_time',
+          width: '180',
+          sortable: true
+        },
+        {
+          title: '标题',
+          key: 'title',
           width: '180'
         },
         {
-          title: '地址',
-          key: 'address'
+          title: '广告链接',
+          key: 'use_name'
         },
         {
-          title: '标签',
-          key: 'tag',
-          filters: [
-            { text: '家', value: '家' },
-            { text: '公司', value: '公司' }
-          ],
-          filterMethod (value, row) {
-            return row.tag === value
-          },
-          filterPlacement: 'bottom-end'
+          title: '点击数',
+          key: 'amount'
+        },
+        {
+          title: '起始时间',
+          key: 'resource_name'
+        },
+        {
+          title: '结束时间',
+          key: 'resource_name'
         }
       ],
-      data: [
+      outCoulum: [
         {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄',
-          tag: '家'
+          label: 'ID',
+          prop: 'create_time'
         },
         {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄',
-          tag: '家'
+          label: '创建时间',
+          prop: 'use_name'
         },
         {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄',
-          tag: '公司'
+          label: '标题',
+          prop: 'amount'
         },
         {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄',
-          tag: '公司'
+          label: '广告链接',
+          prop: 'resource_name'
+        },
+        {
+          label: '点击数',
+          prop: 'use_name'
+        },
+        {
+          label: '起始时间',
+          prop: 'amount'
+        },
+        {
+          label: '结束时间',
+          prop: 'resource_name'
         }
       ],
+      data: [],
       loading: false,
       loadingOptions: {
         text: '拼命加载中',
@@ -94,43 +149,156 @@ export default {
       },
       pagination: {
         currentPage: 1,
-        pageSize: 5,
+        pageSize: 20,
         total: 0
       },
       options: {
-        rowClassName ({ row, rowIndex }) {
-          if (rowIndex === 1) {
-            return 'warning-row'
-          } else if (rowIndex === 3) {
-            return 'success-row'
-          }
-          return ''
-        },
-        height: '1250',
+        strip: true,
+        height: '650',
         highlightCurrentRow: true,
         defaultSort: {
           prop: 'date',
           order: 'descending'
         }
-      }
+      },
+      // 自定义操作列
+      rowHandle: {
+        remove: {
+          icon: 'el-icon-delete',
+          size: 'small',
+          fixed: 'right',
+          confirm: true
+        }
+      },
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
+      value1: '',
+      value2: ''
     }
   },
   methods: {
-     handleSelectionChange (selection) {
-      console.log(selection)
+    handleSelectionChange (selection) {
+      console.log('选择', selection)
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage
-      this.fetchData()
+      this.fetchData(currentPage)
     },
-    fetchData () {
+    fetchData (currentPage) {
+      console.log('当前页:', currentPage)
       this.loading = true
+      getAdvertList({
+        'start_time': '',
+        'end_time': '',
+        'item': '',
+        'page': currentPage,
+        'size': 20,
+        'rank': ''
+      }).then(response => {
+        this.data = response.data
+        this.pagination.total = response.count
+        this.loading = false
+      }).catch(err => {
+        console.log('err', err)
+        this.loading = false
+      })
     },
-    // 普通的新增
+    exportExcel () {
+      console.log(this.columns, this.data)
+      this.$export.excel({
+        columns: this.outCoulum,
+        data: this.data,
+        header: '资源列表'
+
+      })
+        .then(() => {
+          console.log('数据:', this.$refs.d2Crud.d2CrudData)
+          this.$message('导出表格成功')
+        })
+    },
+    query (item) {
+      getAdvertList({
+        'start_time': this.value2[0],
+        'end_time': this.value2[1],
+        'item': this.input,
+        'page': 1,
+        'size': 20,
+        'rank': ''
+      })
+        .then(response => {
+          this.data = response.data
+          this.pagination.total = response.count
+          console.log(response, 'success') // 成功的返回
+        })
+        .catch(error => console.log(error, 'error')) // 失败的返回
+    },
+    // 重置
+    reset () {
+      this.input = ''
+      this.value2 = ''
+      getAdvertList({
+        'start_time': '',
+        'end_time': '',
+        'item': this.input,
+        'page': 1,
+        'size': 20,
+        'rank': ''
+      })
+        .then(response => {
+          this.data = response.data
+          this.pagination.total = response.count
+          console.log(response, 'success') // 成功的返回
+        })
+        .catch(error => console.log(error, 'error')) // 失败的返回
+    },
     addRow () {
       this.$refs.d2Crud.showDialog({
         mode: 'add'
       })
+    },
+    handleRowRemove ({ index, row }, done) {
+      setTimeout(() => {
+        console.log(index)
+        console.log(row)
+        deleteAdvert({
+          'id': index
+        })
+          .then(response => {
+            console.log(response, 'success') // 成功的返回
+          })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+        done()
+      }, 300)
     },
     handleDialogOpen ({ mode }) {
       this.$message({
@@ -139,9 +307,22 @@ export default {
       })
     }
   },
-  mounted () {
-    // this.fetchData()
-    console.log(this.$refs.d2Crud.d2CrudData)
+
+  mounted: function () {
+    getAdvertList({
+      'start_time': '',
+      'end_time': '',
+      'item': '',
+      'page': 1,
+      'size': 20,
+      'rank': ''
+    })
+      .then(response => {
+        this.data = response.data
+        this.pagination.total = response.count
+        console.log(response, 'success') // 成功的返回
+      })
+      .catch(error => console.log(error, 'error')) // 失败的返回
   }
 }
 </script>
@@ -153,5 +334,41 @@ export default {
 
 .el-table .success-row {
   background: #f0f9eb;
+}
+
+.el-button el-button--primary el-button--default {
+  margin-bottom: 5px;
+  margin-left: 20px;
+}
+.el-input el-input--default {
+  margin-bottom: 5px; /* flex: 5; */
+  width: 30%;
+}
+
+/* .demonstration {
+  margin-bottom: 5px;
+  width: 121px;
+  margin: 0 20px;
+} */
+
+.el-date-editor
+  el-range-editor
+  el-input__inner
+  el-date-editor--daterange
+  el-range-editor--default {
+  /* flex: 1; */
+  width: 15%;
+}
+.d2-container-full__header {
+  display: flex;
+}
+.el-button el-button--default el-button--default {
+  margin-bottom: 5px;
+}
+span.demonstration {
+  margin-bottom: 5px; /* margin-right: 10px; */
+  width: 110px;
+  margin: 0 20px; /* line-height: 50px; */
+  background-color: white;
 }
 </style>

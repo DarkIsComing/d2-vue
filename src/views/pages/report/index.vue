@@ -1,5 +1,45 @@
 <template>
-  <div>
+  <d2-container>
+    <template slot="header">
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
+                 @click="exportExcel">导出</el-button>
+
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
+                 @click="stops">停用</el-button>
+      <span class="demonstration"
+            slot="header"
+            style="margin-bottom: 5px">举报时间</span>
+      <el-date-picker v-model="value2"
+                      type="daterange"
+                      align="right"
+                      value-format="yyyy-MM-dd"
+                      slot="header"
+                      unlink-panels
+                      range-separator="-"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      :picker-options="pickerOptions">
+      </el-date-picker>
+      <span class="demonstration"
+            slot="header"
+            style="margin-bottom: 5px">昵称</span>
+      <el-input slot="header"
+                style="margin-bottom: 5px"
+                v-model="input"
+                placeholder="请输入举报对象/举报原因">
+
+      </el-input>
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
+                 type="primary"
+                 @click="query">查询</el-button>
+      <el-button slot="header"
+                 type="info"
+                 style="margin-bottom: 5px"
+                 @click="reset">重置</el-button>
+    </template>
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
@@ -15,54 +55,18 @@
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
              :rowHandle="rowHandle"
-             @custom-emit-1="handleCustomEvent"
+             @custom-emit-1="viewResource"
+             @custom-emit-2="stopResource"
              :pagination="pagination"
-             @pagination-current-change="paginationCurrentChange">
-      :options="options">
-      <el-button slot="header"
-                 style="margin-bottom: 5px"
-                 @click="exportExcel">导出</el-button>
-
-      <el-button slot="header"
-                 style="margin-bottom: 5px"
-                 @click="stop">停用</el-button>
-      <span class="demonstration"
-            slot="header"
-            style="margin-bottom: 5px">举报时间</span>
-      <el-date-picker v-model="value2"
-                      type="daterange"
-                      align="right"
-                      slot="header"
-                      unlink-panels
-                      range-separator="-"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期"
-                      :picker-options="pickerOptions">
-      </el-date-picker>
-      <span class="demonstration"
-            slot="header"
-            style="margin-bottom: 5px">昵称/原因</span>
-      <el-input slot="header"
-                style="margin-bottom: 5px"
-                v-model="input"
-                placeholder="请输入举报对象/举报原因">
-
-      </el-input>
-      <el-button slot="header"
-                 style="margin-bottom: 5px"
-                 type="primary"
-                 @click="query">查询</el-button>
-      <el-button slot="header"
-                 type="info"
-                 style="margin-bottom: 5px"
-                 @click="reset">重置</el-button>
+             @pagination-current-change="paginationCurrentChange"
+             :options="options">
     </d2-crud>
     <myImg></myImg>
-  </div>
+  </d2-container>
 </template>
 
 <script>
-import { getComplaintList } from '@api/resource'
+import { getComplaintList, stopUse } from '@api/resource'
 import myImg from '../../../components/myCom/tableImg'
 export default {
   components: {
@@ -70,6 +74,8 @@ export default {
   },
   data () {
     return {
+      input: '',
+      select_list: [],
       columns: [
         {
           title: '举报时间',
@@ -98,6 +104,24 @@ export default {
           key: 'resource_name'
         }
       ],
+      outCoulum: [
+        {
+          label: '举报时间',
+          prop: 'create_time'
+        },
+        {
+          label: '举报人昵称',
+          prop: 'use_name'
+        },
+        {
+          label: '举报对象',
+          prop: 'resource_use_name'
+        },
+        {
+          label: '举报资源',
+          prop: 'resource_name'
+        }
+      ],
       data: [],
       loading: false,
       loadingOptions: {
@@ -107,19 +131,12 @@ export default {
       },
       pagination: {
         currentPage: 1,
-        pageSize: 5,
+        pageSize: 20,
         total: 0
       },
       options: {
-        rowClassName ({ row, rowIndex }) {
-          if (rowIndex === 1) {
-            return 'warning-row'
-          } else if (rowIndex === 3) {
-            return 'success-row'
-          }
-          return ''
-        },
-        height: '1250',
+        strip: true,
+        height: '650',
         highlightCurrentRow: true,
         defaultSort: {
           prop: 'date',
@@ -139,7 +156,8 @@ export default {
             text: '停用',
             type: 'danger ',
             size: 'small',
-            emit: 'custom-emit-1'
+            emit: 'custom-emit-2',
+            confirm: true
           }
         ]
       },
@@ -176,7 +194,36 @@ export default {
   },
   methods: {
     handleSelectionChange (selection) {
-      console.log(selection)
+      console.log('选择', selection)
+      // for (const i = 0; i < selection.length; i++) { this.select_list.push(selection[i].id) }
+    },
+    viewResource ({ index, row }) {
+      console.log('123')
+    },
+    // 单选停用
+    stopResource ({ index, row }) {
+      console.log('选择的一行:', index, row)
+      stopUse(row.id
+      ).then(response => {
+        this.data = response.data
+      }).catch(err => {
+        console.log('err', err)
+        this.loading = false
+      })
+    },
+    // 多选停用
+    stops () {
+      // this.select_list = handleSelectionChange(selection)
+      stopUse({
+        'id': ''
+      }).then(response => {
+        this.data = response.data
+        this.pagination.total = this.data.length
+        this.loading = false
+      }).catch(err => {
+        console.log('err', err)
+        this.loading = false
+      })
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage
@@ -200,8 +247,9 @@ export default {
       })
     },
     exportExcel () {
+      console.log(this.columns, this.data)
       this.$export.excel({
-        columns: this.columns,
+        columns: this.outCoulum,
         data: this.data,
         header: '资源列表'
 
@@ -211,7 +259,37 @@ export default {
           this.$message('导出表格成功')
         })
     },
-    // 普通的新增
+    query (item) {
+      getComplaintList({
+        'start_time': this.value2[0],
+        'end_time': this.value2[1],
+        'item': this.input,
+        'page': 1,
+        'size': 10
+      })
+        .then(response => {
+          this.data = response.data
+          console.log(response, 'success') // 成功的返回
+        })
+        .catch(error => console.log(error, 'error')) // 失败的返回
+    },
+    // 重置
+    reset () {
+      this.input = ''
+      this.value2 = ''
+      getComplaintList({
+        'start_time': '',
+        'end_time': '',
+        'item': '',
+        'page': 1,
+        'size': 10
+      })
+        .then(response => {
+          this.data = response.data
+          console.log(response, 'success') // 成功的返回
+        })
+        .catch(error => console.log(error, 'error')) // 失败的返回
+    },
     addRow () {
       this.$refs.d2Crud.showDialog({
         mode: 'add'
@@ -224,6 +302,7 @@ export default {
       })
     }
   },
+
   mounted: function () {
     getComplaintList({
       'start_time': '',
@@ -234,6 +313,7 @@ export default {
     })
       .then(response => {
         this.data = response.data
+        this.pagination.total = response.count
         console.log(response, 'success') // 成功的返回
       })
       .catch(error => console.log(error, 'error')) // 失败的返回
@@ -248,5 +328,41 @@ export default {
 
 .el-table .success-row {
   background: #f0f9eb;
+}
+
+.el-button el-button--primary el-button--default {
+  margin-bottom: 5px;
+  margin-left: 20px;
+}
+.el-input el-input--default {
+  margin-bottom: 5px; /* flex: 5; */
+  width: 30%;
+}
+
+/* .demonstration {
+  margin-bottom: 5px;
+  width: 121px;
+  margin: 0 20px;
+} */
+
+.el-date-editor
+  el-range-editor
+  el-input__inner
+  el-date-editor--daterange
+  el-range-editor--default {
+  /* flex: 1; */
+  width: 15%;
+}
+.d2-container-full__header {
+  display: flex;
+}
+.el-button el-button--default el-button--default {
+  margin-bottom: 5px;
+}
+span.demonstration {
+  margin-bottom: 5px; /* margin-right: 10px; */
+  width: 110px;
+  margin: 0 20px; /* line-height: 50px; */
+  background-color: white;
 }
 </style>

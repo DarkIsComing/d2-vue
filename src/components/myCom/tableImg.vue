@@ -1,6 +1,6 @@
 <template>
   <div class="imgs">
-    <img :src="'http://10.168.1.107:8000'+imgs"
+    <img :src="'http://10.168.1.136:8000'+imgs"
          alt="">
   </div>
 </template>

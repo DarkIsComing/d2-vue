@@ -1,9 +1,9 @@
 import request from '@/plugin/axios'
 
-export function getComplaintList (params) {
+export function getSignList (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/complaint/',
+    url: '/admin/sign/',
     method: 'get',
     params: params
   })

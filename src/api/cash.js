@@ -1,19 +1,20 @@
 import request from '@/plugin/axios'
 
-export function getComplaintList (params) {
+export function getCashList (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/complaint/',
+    url: '/admin/cash/',
     method: 'get',
     params: params
   })
 }
+
 
 export function stopUse (params) {
   console.log('传入的参数', params)
   return request({
     url: '/admin/complaint/',
     method: 'delete',
-    data: params
+    params: { 'id': params }
   })
 }

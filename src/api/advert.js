@@ -1,37 +1,18 @@
-import request from '@/utils/request'
+import request from '@/plugin/axios'
 
-export function getReportList (params) {
+export function getAdvertList (params) {
+  console.log('传入的参数', params)
   return request({
-    url: '/admin/complaint',
+    url: '/admin/user/idcard/',
     method: 'get',
     params: params
   })
 }
-export function removeUser (params) {
+export function deleteAdvert (params) {
+  console.log('传入的参数', params)
   return request({
-    url: '/user/remove',
-    method: 'get',
-    params: params
-  })
-}
-export function batchRemoveUser (params) {
-  return request({
-    url: '/user/batchremove',
-    method: 'get',
-    params: params
-  })
-}
-export function editUser (params) {
-  return request({
-    url: '/user/edit',
-    method: 'get',
-    params: params
-  })
-}
-export function addUser (params) {
-  return request({
-    url: '/user/add',
-    method: 'get',
-    params: params
+    url: '/admin/times/',
+    method: 'delete',
+    data: params
   })
 }

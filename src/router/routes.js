@@ -215,6 +215,11 @@ const frameIn = [
           auth: true,
           title: '平台设置'
         }
+      },
+      {
+        path: '/detail',
+        name: 'detail',
+        component: _import('pages/platform/name/detail')
       }
     ]
   }
