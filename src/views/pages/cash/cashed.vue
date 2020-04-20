@@ -92,7 +92,7 @@ export default {
         },
         {
           title: '提现到账时间',
-          key: 'amount'
+          key: 'trans_date'
         },
         {
           title: '状态',
@@ -114,7 +114,7 @@ export default {
         },
         {
           label: '提现到账时间',
-          prop: 'amount'
+          prop: 'trans_date'
         },
         {
           label: '状态',
@@ -201,7 +201,7 @@ export default {
         'item': '',
         'page': currentPage,
         'size': 20,
-        'rank': ''
+        'status': 0
       }).then(response => {
         this.data = response.data
         this.pagination.total = response.count
@@ -216,7 +216,7 @@ export default {
       this.$export.excel({
         columns: this.outCoulum,
         data: this.data,
-        header: '已审核实名认证列表'
+        header: '已提现列表'
 
       })
         .then(() => {
@@ -231,7 +231,7 @@ export default {
         'item': this.input,
         'page': 1,
         'size': 20,
-        'status': 1
+        'status': 0
       })
         .then(response => {
           this.data = response.data
@@ -250,7 +250,7 @@ export default {
         'item': this.input,
         'page': 1,
         'size': 20,
-        'rank': ''
+        'status': 0
       })
         .then(response => {
           this.data = response.data
@@ -275,7 +275,20 @@ export default {
     myImg
   },
   mounted () {
-    console.log('tab2组件')
+    getCashList({
+      'start_time': '',
+      'end_time': '',
+      'item': '',
+      'page': 1,
+      'size': 20,
+      'status': 0
+    })
+      .then(response => {
+        this.data = response.data
+        this.pagination.total = response.count
+        console.log(response, 'success') // 成功的返回
+      })
+      .catch(error => console.log(error, 'error')) // 失败的返回
   }
 }
 </script>

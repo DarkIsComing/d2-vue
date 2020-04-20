@@ -1,16 +1,26 @@
 <template>
-  <d2-container>
-    <template slot="header">
+  <div class="child1">
+    <d2-crud ref="d2Crud"
+             :columns="columns"
+             :data="data"
+             @row-add="handleRowAdd"
+             :loading="loading"
+             :loading-options="loadingOptions"
+             selection-row
+             @selection-change="handleSelectionChange"
+             @current-change="handleCurrentChange"
+             :rowHandle="rowHandle"
+             @row-remove="handleRowRemove"
+             @custom-emit-1="viewDetail"
+             :pagination="pagination"
+             @pagination-current-change="paginationCurrentChange"
+             :options="options">
       <el-button slot="header"
                  style="margin-bottom: 5px"
                  @click="exportExcel">导出</el-button>
-
-      <el-button slot="header"
-                 style="margin-bottom: 5px"
-                 @click="stops">停用</el-button>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">投诉时间</span>
+            style="margin-bottom: 5px">发布时间</span>
       <el-date-picker v-model="value2"
                       type="daterange"
                       align="right"
@@ -24,11 +34,11 @@
       </el-date-picker>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">昵称/内容</span>
+            style="margin-bottom: 5px">昵称/关键字</span>
       <el-input slot="header"
                 style="margin-bottom: 5px"
                 v-model="input"
-                placeholder="请输入投诉人昵称/投诉内容">
+                placeholder="请输入用户昵称/地点关键字">
 
       </el-input>
       <el-button slot="header"
@@ -39,55 +49,28 @@
                  type="info"
                  style="margin-bottom: 5px"
                  @click="reset">重置</el-button>
-    </template>
-    <d2-crud ref="d2Crud"
-             :columns="columns"
-             :data="data"
-             @row-add="handleRowAdd"
-             :loading="loading"
-             :loading-options="loadingOptions"
-             selection-row
-             @selection-change="handleSelectionChange"
-             @current-change="handleCurrentChange"
-             :rowHandle="rowHandle"
-             @custom-emit-1="viewResource"
-             @custom-emit-2="stopResource"
-             :pagination="pagination"
-             @pagination-current-change="paginationCurrentChange"
-             :options="options">
     </d2-crud>
     <myImg></myImg>
-  </d2-container>
+  </div>
 </template>
 
 <script>
-import { getComplaintList, stopUse } from '@api/resource'
+import { getCarList } from '@api/car'
 import myImg from '../../../components/myCom/tableImg'
 export default {
-  components: {
-    myImg
-  },
+  name: 'child1',
   data () {
     return {
       input: '',
-      select_list: [],
       columns: [
         {
-          title: '投诉时间',
+          title: '发布时间',
           key: 'create_time',
           width: '180',
           sortable: true
         },
         {
-          title: '投诉人昵称',
-          key: 'use_name'
-        },
-        {
-          title: '投诉对象',
-          key: 'resource_use_name'
-        },
-        {
-          title: '凭证截图',
+          title: '用户头像',
           key: 'user_image',
           width: '180',
           component: {
@@ -95,17 +78,23 @@ export default {
           }
         },
         {
-          title: '投诉内容',
-          key: 'resource_name'
+          title: '用户昵称',
+          key: 'use_name'
         },
         {
-          title: '行业类目',
+          title: '出发地',
+          key: 'check_status'
+        },
+        {
+          title: '目的地',
+          key: 'check_status'
+        },
+        {
+          title: '是否免费',
           key: 'tag',
           filters: [
-            { text: '共享资源', value: '共享资源' },
-            { text: '需求资源', value: '需求资源' },
-            { text: '供给资源', value: '供给资源' },
-            { text: '悬赏资源', value: '悬赏资源' }
+            { text: '平摊过路费，邮费', value: '平摊过路费，邮费' },
+            { text: '免费', value: '免费' }
           ],
           filterMethod (value, row) {
             return row.tag === value
@@ -115,23 +104,23 @@ export default {
       ],
       outCoulum: [
         {
-          label: '投诉时间',
+          label: '发布时间',
           prop: 'create_time'
         },
         {
-          label: '投诉人昵称',
+          label: '用户昵称',
           prop: 'use_name'
         },
         {
-          label: '投诉对象',
-          prop: 'resource_use_name'
+          label: '出发地',
+          prop: 'check_status'
         },
         {
-          label: '投诉内容',
-          prop: 'resource_name'
+          label: '目的地',
+          prop: 'use_name'
         },
         {
-          label: '行业类目',
+          label: '是否免费',
           prop: 'tag'
         }
       ],
@@ -160,19 +149,18 @@ export default {
       rowHandle: {
         custom: [
           {
-            text: '资源详情',
-            type: 'Success',
+            text: '查看详情',
+            type: 'primary',
             size: 'small',
             emit: 'custom-emit-1'
-          },
-          {
-            text: '停用',
-            type: 'danger ',
-            size: 'small',
-            emit: 'custom-emit-2',
-            confirm: true
           }
-        ]
+        ],
+        remove: {
+          icon: 'el-icon-delete',
+          size: 'small',
+          fixed: 'right',
+          confirm: true
+        }
       },
       pickerOptions: {
         shortcuts: [{
@@ -208,51 +196,24 @@ export default {
   methods: {
     handleSelectionChange (selection) {
       console.log('选择', selection)
-      // for (const i = 0; i < selection.length; i++) { this.select_list.push(selection[i].id) }
-    },
-    viewResource ({ index, row }) {
-      console.log('123')
-    },
-    // 单选停用
-    stopResource ({ index, row }) {
-      console.log('选择的一行:', index, row)
-      stopUse(row.id
-      ).then(response => {
-        this.data = response.data
-      }).catch(err => {
-        console.log('err', err)
-        this.loading = false
-      })
-    },
-    // 多选停用
-    stops () {
-      // this.select_list = handleSelectionChange(selection)
-      stopUse({
-        'id': ''
-      }).then(response => {
-        this.data = response.data
-        this.pagination.total = this.data.length
-        this.loading = false
-      }).catch(err => {
-        console.log('err', err)
-        this.loading = false
-      })
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage
       this.fetchData(currentPage)
     },
     fetchData (currentPage) {
+      console.log('当前页:', currentPage)
       this.loading = true
-      getComplaintList({
+      getCarList({
         'start_time': '',
         'end_time': '',
         'item': '',
         'page': currentPage,
-        'size': 10
+        'size': 20,
+        'status': 1
       }).then(response => {
         this.data = response.data
-        this.pagination.total = this.data.length
+        this.pagination.total = response.count
         this.loading = false
       }).catch(err => {
         console.log('err', err)
@@ -264,7 +225,7 @@ export default {
       this.$export.excel({
         columns: this.outCoulum,
         data: this.data,
-        header: '资源列表'
+        header: '待审核列表'
 
       })
         .then(() => {
@@ -272,16 +233,22 @@ export default {
           this.$message('导出表格成功')
         })
     },
+    viewDetail ({ index, row }) {
+      this.$router.push({ name: 'detail', query: { 'id': row.id } })
+      console.log(index, row)
+    },
     query (item) {
-      getComplaintList({
+      getCarList({
         'start_time': this.value2[0],
         'end_time': this.value2[1],
         'item': this.input,
         'page': 1,
-        'size': 10
+        'size': 20,
+        'status': 1
       })
         .then(response => {
           this.data = response.data
+          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -290,15 +257,17 @@ export default {
     reset () {
       this.input = ''
       this.value2 = ''
-      getComplaintList({
+      getCarList({
         'start_time': '',
         'end_time': '',
-        'item': '',
+        'item': this.input,
         'page': 1,
-        'size': 10
+        'size': 20,
+        'status': 1
       })
         .then(response => {
           this.data = response.data
+          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -315,14 +284,17 @@ export default {
       })
     }
   },
-
+  components: {
+    myImg
+  },
   mounted: function () {
-    getComplaintList({
+    getCarList({
       'start_time': '',
       'end_time': '',
       'item': '',
       'page': 1,
-      'size': 10
+      'size': 20,
+      'status': 1
     })
       .then(response => {
         this.data = response.data
@@ -333,6 +305,7 @@ export default {
   }
 }
 </script>
+
 
 <style>
 .el-table .warning-row {

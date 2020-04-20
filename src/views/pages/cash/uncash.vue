@@ -88,19 +88,11 @@ export default {
         {
           title: '提现金额',
           key: 'amount'
-        },
-        {
-          title: '提现到账时间',
-          key: 'amount'
-        },
-        {
-          title: '状态',
-          key: 'status'
         }
       ],
       outCoulum: [
         {
-          label: '申请时间',
+          label: '提现时间',
           prop: 'create_time'
         },
         {
@@ -110,14 +102,6 @@ export default {
         {
           label: '提现金额',
           prop: 'amount'
-        },
-        {
-          label: '提现到账时间',
-          prop: 'amount'
-        },
-        {
-          label: '状态',
-          prop: 'status'
         }
       ],
       data: [],
@@ -200,7 +184,7 @@ export default {
         'item': '',
         'page': currentPage,
         'size': 20,
-        'rank': ''
+        'status': 1
       }).then(response => {
         this.data = response.data
         this.pagination.total = response.count
@@ -230,7 +214,7 @@ export default {
         'item': this.input,
         'page': 1,
         'size': 20,
-        'status': 1
+        'status': 1 // 1待提现 0已提现
       })
         .then(response => {
           this.data = response.data
@@ -249,7 +233,7 @@ export default {
         'item': this.input,
         'page': 1,
         'size': 20,
-        'rank': ''
+        'status': 1
       })
         .then(response => {
           this.data = response.data
@@ -274,7 +258,20 @@ export default {
     myImg
   },
   mounted () {
-    console.log('tab1组件')
+    getCashList({
+      'start_time': '',
+      'end_time': '',
+      'item': '',
+      'page': 1,
+      'size': 20,
+      'status': 1
+    })
+      .then(response => {
+        this.data = response.data
+        this.pagination.total = response.count
+        console.log(response, 'success') // 成功的返回
+      })
+      .catch(error => console.log(error, 'error')) // 失败的返回
   }
 }
 </script>

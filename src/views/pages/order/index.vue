@@ -60,17 +60,12 @@
              @pagination-current-change="paginationCurrentChange"
              :options="options">
     </d2-crud>
-    <myImg></myImg>
   </d2-container>
 </template>
 
 <script>
 import { getOrderList } from '@api/order'
-import myImg from '../../../components/myCom/tableImg'
 export default {
-  components: {
-    myImg
-  },
   data () {
     return {
       input: '',
@@ -221,7 +216,7 @@ export default {
       this.$export.excel({
         columns: this.outCoulum,
         data: this.data,
-        header: '邀请记录列表'
+        header: '订单列表'
 
       })
         .then(() => {

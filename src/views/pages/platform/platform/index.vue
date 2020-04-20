@@ -4,13 +4,9 @@
       <el-button slot="header"
                  style="margin-bottom: 5px"
                  @click="exportExcel">导出</el-button>
-
-      <el-button slot="header"
-                 style="margin-bottom: 5px"
-                 @click="stops">停用</el-button>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">投诉时间</span>
+            style="margin-bottom: 5px">操作时间</span>
       <el-date-picker v-model="value2"
                       type="daterange"
                       align="right"
@@ -24,11 +20,11 @@
       </el-date-picker>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">昵称/内容</span>
+            style="margin-bottom: 5px">用户名/操作内容</span>
       <el-input slot="header"
                 style="margin-bottom: 5px"
                 v-model="input"
-                placeholder="请输入投诉人昵称/投诉内容">
+                placeholder="请输入用户名/操作内容关键字">
 
       </el-input>
       <el-button slot="header"
@@ -43,15 +39,18 @@
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
+             add-title="新增广告"
+             :add-template="addTemplate"
+             :form-options="formOptions"
+             @dialog-open="handleDialogOpen"
              @row-add="handleRowAdd"
+             @dialog-cancel="handleDialogCancel"
              :loading="loading"
              :loading-options="loadingOptions"
              selection-row
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
-             :rowHandle="rowHandle"
-             @custom-emit-1="viewResource"
-             @custom-emit-2="stopResource"
+             @custom-emit-1="handleCustomEvent"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
              :options="options">
@@ -61,8 +60,8 @@
 </template>
 
 <script>
-import { getComplaintList, stopUse } from '@api/resource'
-import myImg from '../../../components/myCom/tableImg'
+import { getPlatformList } from '@api/platform'
+import myImg from '../../../../components/myCom/tableImg'
 export default {
   components: {
     myImg
@@ -70,69 +69,43 @@ export default {
   data () {
     return {
       input: '',
-      select_list: [],
       columns: [
         {
-          title: '投诉时间',
-          key: 'create_time',
+          title: '用户姓名',
+          key: 'name',
           width: '180',
           sortable: true
         },
         {
-          title: '投诉人昵称',
-          key: 'use_name'
+          title: 'ip地址',
+          key: 'ip',
+          width: '180'
         },
         {
-          title: '投诉对象',
-          key: 'resource_use_name'
+          title: '操作内容',
+          key: 'notes'
         },
         {
-          title: '凭证截图',
-          key: 'user_image',
-          width: '180',
-          component: {
-            name: myImg
-          }
-        },
-        {
-          title: '投诉内容',
-          key: 'resource_name'
-        },
-        {
-          title: '行业类目',
-          key: 'tag',
-          filters: [
-            { text: '共享资源', value: '共享资源' },
-            { text: '需求资源', value: '需求资源' },
-            { text: '供给资源', value: '供给资源' },
-            { text: '悬赏资源', value: '悬赏资源' }
-          ],
-          filterMethod (value, row) {
-            return row.tag === value
-          },
-          filterPlacement: 'bottom-end'
+          title: '操作时间',
+          key: 'create_time'
         }
       ],
       outCoulum: [
         {
-          label: '投诉时间',
+          label: '用户姓名',
+          prop: 'name'
+        },
+        {
+          label: 'ip地址',
+          prop: 'ip'
+        },
+        {
+          label: '操作内容',
+          prop: 'notes'
+        },
+        {
+          label: '操作时间',
           prop: 'create_time'
-        },
-        {
-          label: '投诉人昵称',
-          prop: 'use_name'
-        },
-        {
-          label: '投诉对象',
-          prop: 'resource_use_name'
-        },
-        {
-          label: '投诉内容',
-          prop: 'resource_name'
-        },
-        {
-          label: '行业类目',
-          prop: 'tag'
         }
       ],
       data: [],
@@ -157,23 +130,6 @@ export default {
         }
       },
       // 自定义操作列
-      rowHandle: {
-        custom: [
-          {
-            text: '资源详情',
-            type: 'Success',
-            size: 'small',
-            emit: 'custom-emit-1'
-          },
-          {
-            text: '停用',
-            type: 'danger ',
-            size: 'small',
-            emit: 'custom-emit-2',
-            confirm: true
-          }
-        ]
-      },
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -208,51 +164,23 @@ export default {
   methods: {
     handleSelectionChange (selection) {
       console.log('选择', selection)
-      // for (const i = 0; i < selection.length; i++) { this.select_list.push(selection[i].id) }
-    },
-    viewResource ({ index, row }) {
-      console.log('123')
-    },
-    // 单选停用
-    stopResource ({ index, row }) {
-      console.log('选择的一行:', index, row)
-      stopUse(row.id
-      ).then(response => {
-        this.data = response.data
-      }).catch(err => {
-        console.log('err', err)
-        this.loading = false
-      })
-    },
-    // 多选停用
-    stops () {
-      // this.select_list = handleSelectionChange(selection)
-      stopUse({
-        'id': ''
-      }).then(response => {
-        this.data = response.data
-        this.pagination.total = this.data.length
-        this.loading = false
-      }).catch(err => {
-        console.log('err', err)
-        this.loading = false
-      })
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage
       this.fetchData(currentPage)
     },
     fetchData (currentPage) {
+      console.log('当前页:', currentPage)
       this.loading = true
-      getComplaintList({
+      getPlatformList({
         'start_time': '',
         'end_time': '',
         'item': '',
         'page': currentPage,
-        'size': 10
+        'size': 20
       }).then(response => {
         this.data = response.data
-        this.pagination.total = this.data.length
+        this.pagination.total = response.count
         this.loading = false
       }).catch(err => {
         console.log('err', err)
@@ -264,7 +192,7 @@ export default {
       this.$export.excel({
         columns: this.outCoulum,
         data: this.data,
-        header: '资源列表'
+        header: '平台管理列表'
 
       })
         .then(() => {
@@ -273,15 +201,16 @@ export default {
         })
     },
     query (item) {
-      getComplaintList({
+      getPlatformList({
         'start_time': this.value2[0],
         'end_time': this.value2[1],
         'item': this.input,
         'page': 1,
-        'size': 10
+        'size': 20
       })
         .then(response => {
           this.data = response.data
+          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -290,15 +219,16 @@ export default {
     reset () {
       this.input = ''
       this.value2 = ''
-      getComplaintList({
+      getPlatformList({
         'start_time': '',
         'end_time': '',
-        'item': '',
+        'item': this.input,
         'page': 1,
-        'size': 10
+        'size': 20
       })
         .then(response => {
           this.data = response.data
+          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -317,12 +247,12 @@ export default {
   },
 
   mounted: function () {
-    getComplaintList({
+    getPlatformList({
       'start_time': '',
       'end_time': '',
       'item': '',
       'page': 1,
-      'size': 10
+      'size': 20
     })
       .then(response => {
         this.data = response.data

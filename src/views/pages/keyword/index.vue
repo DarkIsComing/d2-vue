@@ -7,7 +7,7 @@
 
       <el-button slot="header"
                  style="margin-bottom: 5px"
-                 @click="stop">停用</el-button>
+                 @click="stop">删除</el-button>
       <span class="demonstration"
             slot="header"
             style="margin-bottom: 5px">新增时间</span>
@@ -83,12 +83,12 @@ export default {
         },
         {
           title: '关键字内容',
-          key: 'free',
+          key: 'name',
           width: '180'
         },
         {
           title: '关键字资源数',
-          key: 'amount'
+          key: 'count'
         }
       ],
       outCoulum: [
@@ -98,11 +98,11 @@ export default {
         },
         {
           label: '关键字内容',
-          prop: 'free'
+          prop: 'name'
         },
         {
           label: '关键字资源数',
-          prop: 'amount'
+          prop: 'count'
         }
       ],
       data: [],
@@ -205,7 +205,7 @@ export default {
       this.$export.excel({
         columns: this.outCoulum,
         data: this.data,
-        header: '邀请记录列表'
+        header: '关键字列表'
 
       })
         .then(() => {
