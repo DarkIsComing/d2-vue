@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import "echarts/lib/component/title";
+import 'echarts/lib/component/title'
 export default {
   data: function () {
     return {

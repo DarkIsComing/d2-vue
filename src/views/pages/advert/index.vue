@@ -314,7 +314,7 @@ export default {
         this.$message({
           message: '保存成功',
           type: 'success'
-        });
+        })
 
         // done可以传入一个对象来修改提交的某个字段
         done({
@@ -327,7 +327,7 @@ export default {
       this.$message({
         message: '取消保存',
         type: 'warning'
-      });
+      })
       done()
     },
     // 传入自定义模板的新增
