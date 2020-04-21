@@ -213,8 +213,7 @@ export default {
       getIdcardDetail({
         'id': index
       }).then(response => {
-        this.data = response.data
-        this.pagination.total = response.count
+        this.$router.push({ name: 'detail', query: { 'id': row.id } })
         console.log(response, 'success') // 成功的返回
       })
         .catch(error => console.log(error, 'error')) // 失败的返回

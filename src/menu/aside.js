@@ -78,6 +78,7 @@ export default [
     title: '平台管理',
     icon: 'map',
     children: [
+      { path: '/platform', icon: 'map', title: '平台管理' },
       { path: '/manager', icon: 'user-circle-o', title: '管理员列表' },
       { path: '/message', icon: 'comment-o', title: '消息管理' },
       { path: '/name', icon: 'vcard-o', title: '实名认证' }

@@ -181,6 +181,15 @@ const frameIn = [
         }
       },
       {
+        path: 'platform',
+        name: 'Pplatform',
+        component: _import('pages/platform/platform'),
+        meta: {
+          auth: true,
+          title: '平台管理'
+        }
+      },
+      {
         path: 'manager',
         name: 'Pmanager',
         component: _import('pages/platform/manager'),

@@ -1,30 +1,12 @@
 <template>
-  <div class="child1">
-    <d2-crud ref="d2Crud"
-             :columns="columns"
-             :data="data"
-             add-title="待提现"
-             :add-template="addTemplate"
-             :form-options="formOptions"
-             @dialog-open="handleDialogOpen"
-             @row-add="handleRowAdd"
-             @dialog-cancel="handleDialogCancel"
-             :loading="loading"
-             :loading-options="loadingOptions"
-             selection-row
-             @selection-change="handleSelectionChange"
-             @current-change="handleCurrentChange"
-             :rowHandle="rowHandle"
-             @custom-emit-1="handleCustomEvent"
-             :pagination="pagination"
-             @pagination-current-change="paginationCurrentChange"
-             :options="options">
+  <d2-container>
+    <template slot="header">
       <el-button slot="header"
                  style="margin-bottom: 5px"
                  @click="exportExcel">导出</el-button>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">提现时间</span>
+            style="margin-bottom: 5px">操作时间</span>
       <el-date-picker v-model="value2"
                       type="daterange"
                       align="right"
@@ -38,11 +20,11 @@
       </el-date-picker>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">用户昵称</span>
+            style="margin-bottom: 5px">用户名/操作内容</span>
       <el-input slot="header"
                 style="margin-bottom: 5px"
                 v-model="input"
-                placeholder="请输入用户昵称">
+                placeholder="请输入用户名/操作内容关键字">
 
       </el-input>
       <el-button slot="header"
@@ -53,55 +35,77 @@
                  type="info"
                  style="margin-bottom: 5px"
                  @click="reset">重置</el-button>
+    </template>
+    <d2-crud ref="d2Crud"
+             :columns="columns"
+             :data="data"
+             add-title="新增广告"
+             :add-template="addTemplate"
+             :form-options="formOptions"
+             @dialog-open="handleDialogOpen"
+             @row-add="handleRowAdd"
+             @dialog-cancel="handleDialogCancel"
+             :loading="loading"
+             :loading-options="loadingOptions"
+             selection-row
+             @selection-change="handleSelectionChange"
+             @current-change="handleCurrentChange"
+             @custom-emit-1="handleCustomEvent"
+             :pagination="pagination"
+             @pagination-current-change="paginationCurrentChange"
+             :options="options">
     </d2-crud>
     <myImg></myImg>
-  </div>
+  </d2-container>
 </template>
 
 <script>
-import { getCashList } from '@api/cash'
-import myImg from '../../../components/myCom/tableImg'
+import { getPlatformList } from '@api/platform'
+import myImg from '../../../../components/myCom/tableImg'
 export default {
-  name: 'child1',
+  components: {
+    myImg
+  },
   data () {
     return {
       input: '',
       columns: [
         {
-          title: '提现时间',
-          key: 'create_time',
+          title: '用户姓名',
+          key: 'name',
           width: '180',
           sortable: true
         },
         {
-          title: '用户头像',
-          key: 'user_image',
-          width: '180',
-          component: {
-            name: myImg
-          }
+          title: 'ip地址',
+          key: 'ip',
+          width: '180'
         },
         {
-          title: '用户昵称',
-          key: 'use_name'
+          title: '操作内容',
+          key: 'notes'
         },
         {
-          title: '提现金额',
-          key: 'amount'
+          title: '操作时间',
+          key: 'create_time'
         }
       ],
       outCoulum: [
         {
-          label: '提现时间',
+          label: '用户姓名',
+          prop: 'name'
+        },
+        {
+          label: 'ip地址',
+          prop: 'ip'
+        },
+        {
+          label: '操作内容',
+          prop: 'notes'
+        },
+        {
+          label: '操作时间',
           prop: 'create_time'
-        },
-        {
-          label: '用户昵称',
-          prop: 'use_name'
-        },
-        {
-          label: '提现金额',
-          prop: 'amount'
         }
       ],
       data: [],
@@ -126,16 +130,6 @@ export default {
         }
       },
       // 自定义操作列
-      rowHandle: {
-        custom: [
-          {
-            text: '查看详情',
-            type: 'primary',
-            size: 'small',
-            emit: 'custom-emit-1'
-          }
-        ]
-      },
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -178,13 +172,12 @@ export default {
     fetchData (currentPage) {
       console.log('当前页:', currentPage)
       this.loading = true
-      getCashList({
+      getPlatformList({
         'start_time': '',
         'end_time': '',
         'item': '',
         'page': currentPage,
-        'size': 20,
-        'status': 1
+        'size': 20
       }).then(response => {
         this.data = response.data
         this.pagination.total = response.count
@@ -199,7 +192,7 @@ export default {
       this.$export.excel({
         columns: this.outCoulum,
         data: this.data,
-        header: '待提现列表'
+        header: '平台管理列表'
 
       })
         .then(() => {
@@ -208,13 +201,12 @@ export default {
         })
     },
     query (item) {
-      getCashList({
+      getPlatformList({
         'start_time': this.value2[0],
         'end_time': this.value2[1],
         'item': this.input,
         'page': 1,
-        'size': 20,
-        'status': 1 // 1待提现 0已提现
+        'size': 20
       })
         .then(response => {
           this.data = response.data
@@ -227,13 +219,12 @@ export default {
     reset () {
       this.input = ''
       this.value2 = ''
-      getCashList({
+      getPlatformList({
         'start_time': '',
         'end_time': '',
         'item': this.input,
         'page': 1,
-        'size': 20,
-        'status': 1
+        'size': 20
       })
         .then(response => {
           this.data = response.data
@@ -254,17 +245,14 @@ export default {
       })
     }
   },
-  components: {
-    myImg
-  },
-  mounted () {
-    getCashList({
+
+  mounted: function () {
+    getPlatformList({
       'start_time': '',
       'end_time': '',
       'item': '',
       'page': 1,
-      'size': 20,
-      'status': 1
+      'size': 20
     })
       .then(response => {
         this.data = response.data
@@ -275,7 +263,6 @@ export default {
   }
 }
 </script>
-
 
 <style>
 .el-table .warning-row {
