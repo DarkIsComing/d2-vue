@@ -3,11 +3,11 @@
     <template slot="header">
       <el-button slot="header"
                  style="margin-bottom: 5px"
-                 @click="exportExcel">导出</el-button>
+                 @click="addRow">新增</el-button>
 
       <el-button slot="header"
                  style="margin-bottom: 5px"
-                 @click="stop">停用</el-button>
+                 @click="stop">删除</el-button>
       <span class="demonstration"
             slot="header"
             style="margin-bottom: 5px">创建时间</span>
@@ -161,6 +161,12 @@ export default {
           order: 'descending'
         }
       },
+      // 弹窗表单显示
+      formOptions: {
+        labelWidth: '80px',
+        labelPosition: 'left',
+        saveLoading: false
+      },
       // 自定义操作列
       rowHandle: {
         remove: {
@@ -276,11 +282,6 @@ export default {
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
     },
-    addRow () {
-      this.$refs.d2Crud.showDialog({
-        mode: 'add'
-      })
-    },
     handleRowRemove ({ index, row }, done) {
       setTimeout(() => {
         console.log(index)
@@ -304,6 +305,73 @@ export default {
       this.$message({
         message: '打开模态框，模式为：' + mode,
         type: 'success'
+      })
+    },
+    handleRowAdd (row, done) {
+      this.formOptions.saveLoading = true
+      setTimeout(() => {
+        console.log(row)
+        this.$message({
+          message: '保存成功',
+          type: 'success'
+        });
+
+        // done可以传入一个对象来修改提交的某个字段
+        done({
+          address: '我是通过done事件传入的数据！'
+        })
+        this.formOptions.saveLoading = false
+      }, 300)
+    },
+    handleDialogCancel (done) {
+      this.$message({
+        message: '取消保存',
+        type: 'warning'
+      });
+      done()
+    },
+    // 传入自定义模板的新增
+    addRow () {
+      this.$refs.d2Crud.showDialog({
+        mode: 'add',
+        template: {
+          name: {
+            title: '广告标题',
+            value: ''
+          },
+          content: {
+            title: '广告内容',
+            value: ''
+          },
+          url: {
+            title: '广告链接',
+            value: ''
+          },
+          date: {
+            title: '日期设置',
+            value: '',
+            component: {
+              name: 'el-date-picker',
+              span: 12
+            }
+          },
+          time: {
+            title: '时间设置',
+            value: '',
+            component: {
+              name: 'el-time-picker',
+              span: 12
+            }
+          },
+          picture: {
+            title: '图片设置',
+            value: ''
+          },
+          postion: {
+            title: '投放位置',
+            value: ''
+          }
+        }
       })
     }
   },
