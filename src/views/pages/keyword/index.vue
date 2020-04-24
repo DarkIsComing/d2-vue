@@ -55,7 +55,7 @@
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
              :rowHandle="rowHandle"
-             @custom-emit-1="handleCustomEvent"
+             @custom-emit-1="viewDetail"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
              :options="options">
@@ -226,6 +226,9 @@ export default {
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
+    },
+    viewDetail ({ index, row }) {
+      this.$router.push({ name: 'keywordDetail', query: { 'id': row.id, 'type_status': 0 } })
     },
     // 重置
     reset () {

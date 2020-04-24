@@ -1,27 +1,27 @@
 import request from '@/plugin/axios'
 
-export function getCarList (params) {
+export function getResourceList (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/car/',
+    url: '/admin/resource/',
     method: 'get',
     params: params
   })
 }
 
-export function deleteCar (params) {
+export function stopUse (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/car/',
+    url: '/admin/resource/',
     method: 'delete',
     data: params
   })
 }
 
-export function getCarDetail (params) {
+export function getResourceDetail (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/car/detail/',
+    url: '/admin/resource/detail/',
     method: 'get',
     params: params
   })

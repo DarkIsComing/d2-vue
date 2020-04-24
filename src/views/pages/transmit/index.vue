@@ -7,7 +7,7 @@
 
       <el-button slot="header"
                  style="margin-bottom: 5px"
-                 @click="stop">停用</el-button>
+                 @click="stop">删除</el-button>
       <span class="demonstration"
             slot="header"
             style="margin-bottom: 5px">转发时间</span>
@@ -43,12 +43,6 @@
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
-             add-title="新增广告"
-             :add-template="addTemplate"
-             :form-options="formOptions"
-             @dialog-open="handleDialogOpen"
-             @row-add="handleRowAdd"
-             @dialog-cancel="handleDialogCancel"
              :loading="loading"
              :loading-options="loadingOptions"
              selection-row
@@ -144,14 +138,6 @@ export default {
       },
       // 自定义操作列
       rowHandle: {
-        custom: [
-          {
-            text: '编辑',
-            type: 'danger ',
-            size: 'small',
-            emit: 'custom-emit-1'
-          }
-        ],
         remove: {
           icon: 'el-icon-delete',
           size: 'small',
@@ -187,12 +173,46 @@ export default {
         }]
       },
       value1: '',
-      value2: ''
+      value2: '',
+      sels: []
     }
   },
   methods: {
     handleSelectionChange (selection) {
       console.log('选择', selection)
+      this.sels = selection
+    },
+    stop () {
+      console.log(this.sels, typeof (this.sels))
+      let ids = this.sels.map(item => item.id)
+      console.log('ids:', ids, typeof (ids))
+      this.$confirm('确认删除选中记录吗？', '提示', {
+        type: 'warning'
+      })
+        .then(() => {
+          const para = { 'id': ids }
+          deleteTransmit(para).then(res => {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            getTransmitList({
+              'start_time': '',
+              'end_time': '',
+              'item': '',
+              'page': 1,
+              'size': 20,
+              'rank': ''
+            })
+              .then(response => {
+                this.data = response.data
+                this.pagination.total = response.count
+                console.log(response, 'success') // 成功的返回
+              })
+              .catch(error => console.log(error, 'error')) // 失败的返回
+          })
+        })
+        .catch(() => { })
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage

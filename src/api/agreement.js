@@ -1,19 +1,19 @@
 import request from '@/plugin/axios'
 
-export function getChatList (params) {
+export function getAgreementList (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/chat/',
+    url: '/admin/agreement/',
     method: 'get',
     params: params
   })
 }
 
-export function deleteChat (params) {
+export function postAgreement (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/chat/',
-    method: 'delete',
+    url: '/admin/agreement/',
+    method: 'post',
     data: params
   })
 }

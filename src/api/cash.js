@@ -10,11 +10,11 @@ export function getCashList (params) {
 }
 
 
-export function stopUse (params) {
+export function cashTranfer (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/complaint/',
-    method: 'delete',
-    params: { 'id': params }
+    url: '/pay/alipay/cash',
+    method: 'post',
+    data: params
   })
 }

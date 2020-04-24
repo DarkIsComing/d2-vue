@@ -88,7 +88,7 @@ export default {
         },
         {
           title: '凭证截图',
-          key: 'user_image',
+          key: 'complaint_image',
           width: '180',
           component: {
             name: myImg
@@ -96,11 +96,11 @@ export default {
         },
         {
           title: '投诉内容',
-          key: 'resource_name'
+          key: 'complaint_status'
         },
         {
           title: '行业类目',
-          key: 'tag',
+          key: 'resource_status',
           filters: [
             { text: '共享资源', value: '共享资源' },
             { text: '需求资源', value: '需求资源' },
@@ -128,11 +128,11 @@ export default {
         },
         {
           label: '投诉内容',
-          prop: 'resource_name'
+          prop: 'complaint_status'
         },
         {
           label: '行业类目',
-          prop: 'tag'
+          prop: 'resource_status'
         }
       ],
       data: [],
@@ -164,15 +164,14 @@ export default {
             type: 'Success',
             size: 'small',
             emit: 'custom-emit-1'
-          },
-          {
-            text: '停用',
-            type: 'danger ',
-            size: 'small',
-            emit: 'custom-emit-2',
-            confirm: true
           }
-        ]
+        ],
+        remove: {
+          icon: 'el-icon-delete',
+          size: 'small',
+          fixed: 'right',
+          confirm: true
+        }
       },
       pickerOptions: {
         shortcuts: [{

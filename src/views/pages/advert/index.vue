@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { getAdvertList, deleteAdvert } from '@api/advert'
+import { getAdvertList, deleteAdvert, postAdvert } from '@api/advert'
 import myImg from '../../../components/myCom/tableImg'
 export default {
   components: {
@@ -78,7 +78,7 @@ export default {
       columns: [
         {
           title: 'ID',
-          key: 'create_time',
+          key: 'id',
           width: '180',
           sortable: true
         },
@@ -90,54 +90,54 @@ export default {
         },
         {
           title: '标题',
-          key: 'title',
+          key: 'name',
           width: '180'
         },
         {
           title: '广告链接',
-          key: 'use_name'
+          key: 'advert_url'
         },
         {
           title: '点击数',
-          key: 'amount'
+          key: 'count'
         },
         {
           title: '起始时间',
-          key: 'resource_name'
+          key: 'start_time'
         },
         {
           title: '结束时间',
-          key: 'resource_name'
+          key: 'end_time'
         }
       ],
       outCoulum: [
         {
           label: 'ID',
-          prop: 'create_time'
+          prop: 'id'
         },
         {
           label: '创建时间',
-          prop: 'use_name'
+          prop: 'create_time'
         },
         {
           label: '标题',
-          prop: 'amount'
+          prop: 'name'
         },
         {
           label: '广告链接',
-          prop: 'resource_name'
+          prop: 'advert_url'
         },
         {
           label: '点击数',
-          prop: 'use_name'
+          prop: 'count'
         },
         {
           label: '起始时间',
-          prop: 'amount'
+          prop: 'start_time'
         },
         {
           label: '结束时间',
-          prop: 'resource_name'
+          prop: 'end_time'
         }
       ],
       data: [],
@@ -204,12 +204,14 @@ export default {
         }]
       },
       value1: '',
-      value2: ''
+      value2: '',
+      sels: [] // 列表选中列
     }
   },
   methods: {
     handleSelectionChange (selection) {
       console.log('选择', selection)
+      this.sels = selection
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage
@@ -223,8 +225,7 @@ export default {
         'end_time': '',
         'item': '',
         'page': currentPage,
-        'size': 20,
-        'rank': ''
+        'size': 20
       }).then(response => {
         this.data = response.data
         this.pagination.total = response.count
@@ -253,8 +254,7 @@ export default {
         'end_time': this.value2[1],
         'item': this.input,
         'page': 1,
-        'size': 20,
-        'rank': ''
+        'size': 20
       })
         .then(response => {
           this.data = response.data
@@ -272,8 +272,7 @@ export default {
         'end_time': '',
         'item': this.input,
         'page': 1,
-        'size': 20,
-        'rank': ''
+        'size': 20
       })
         .then(response => {
           this.data = response.data
@@ -281,6 +280,35 @@ export default {
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
+    },
+    stop () {
+      let ids = this.sels.map(item => item.id).toString()
+      this.$confirm('确认删除选中记录吗？', '提示', {
+        type: 'warning'
+      })
+        .then(() => {
+          const para = { id: ids }
+          deleteAdvert(para).then(res => {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            getAdvertList({
+              'start_time': '',
+              'end_time': '',
+              'item': '',
+              'page': 1,
+              'size': 20
+            })
+              .then(response => {
+                this.data = response.data
+                this.pagination.total = response.count
+                console.log(response, 'success') // 成功的返回
+              })
+              .catch(error => console.log(error, 'error')) // 失败的返回
+          })
+        })
+        .catch(() => { })
     },
     handleRowRemove ({ index, row }, done) {
       setTimeout(() => {
@@ -311,6 +339,19 @@ export default {
       this.formOptions.saveLoading = true
       setTimeout(() => {
         console.log(row)
+        postAdvert({
+          'start_time': row.start_time,
+          'end_time': '',
+          'id': '',
+          'name': '',
+          'area': '',
+          'advert_url': '',
+          'notes': ''
+        }).then(response => {
+          console.log(response, 'success') // 成功的返回
+        })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+
         this.$message({
           message: '保存成功',
           type: 'success'
@@ -347,19 +388,20 @@ export default {
             title: '广告链接',
             value: ''
           },
-          date: {
-            title: '日期设置',
+
+          start_time: {
+            title: '开始时间',
             value: '',
             component: {
               name: 'el-date-picker',
               span: 12
             }
           },
-          time: {
-            title: '时间设置',
+          end_time: {
+            title: '结束时间',
             value: '',
             component: {
-              name: 'el-time-picker',
+              name: 'el-date-picker',
               span: 12
             }
           },
@@ -369,7 +411,11 @@ export default {
           },
           postion: {
             title: '投放位置',
-            value: ''
+            value: '',
+            component: {
+              name: 'el-cascader',
+              span: 12
+            }
           }
         }
       })
@@ -382,8 +428,7 @@ export default {
       'end_time': '',
       'item': '',
       'page': 1,
-      'size': 20,
-      'rank': ''
+      'size': 20
     })
       .then(response => {
         this.data = response.data

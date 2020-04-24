@@ -55,12 +55,75 @@ const frameIn = [
         }
       },
       {
-        path: 'resourceList',
-        name: 'resourceList',
-        component: _import('pages/resource/list'),
+        path: '/company',
+        name: 'company',
+        component: _import('pages/resource/list/company'),
         meta: {
           auth: true,
-          title: '资源列表'
+          title: '注册公司'
+        }
+      },
+      {
+        path: '/finance',
+        name: 'finance',
+        component: _import('pages/resource/list/finance'),
+        meta: {
+          auth: true,
+          title: '财政纳税'
+        }
+      },
+      {
+        path: '/law',
+        name: 'law',
+        component: _import('pages/resource/list/law'),
+        meta: {
+          auth: true,
+          title: '法律咨询'
+        }
+      },
+      {
+        path: '/career',
+        name: 'career',
+        component: _import('pages/resource/list/career'),
+        meta: {
+          auth: true,
+          title: '职业规划'
+        }
+      },
+      {
+        path: '/talent',
+        name: 'talent',
+        component: _import('pages/resource/list/talent'),
+        meta: {
+          auth: true,
+          title: '人才服务'
+        }
+      },
+      {
+        path: '/policy',
+        name: 'policy',
+        component: _import('pages/resource/list/policy'),
+        meta: {
+          auth: true,
+          title: '政策解读'
+        }
+      },
+      {
+        path: '/partTime',
+        name: 'partTime',
+        component: _import('pages/resource/list/partTime'),
+        meta: {
+          auth: true,
+          title: '兼职零工'
+        }
+      },
+      {
+        path: '/share',
+        name: 'share',
+        component: _import('pages/resource/list/share'),
+        meta: {
+          auth: true,
+          title: '共享资源'
         }
       },
       {
@@ -235,9 +298,38 @@ const frameIn = [
         }
       },
       {
-        path: '/detail',
-        name: 'detail',
+        path: '/agreement',
+        name: 'agreement',
+        component: _import('pages/agreement'),
+        meta: {
+          auth: true,
+          title: '平台设置'
+        }
+      },
+      {
+        path: '/nameDetail',
+        name: 'nameDetail',
         component: _import('pages/platform/name/detail')
+      },
+      {
+        path: '/carDetail',
+        name: 'carDetail',
+        component: _import('pages/car/detail')
+      },
+      {
+        path: '/userDetail',
+        name: 'userDetail',
+        component: _import('pages/user/detail')
+      },
+      {
+        path: '/resourceDetail',
+        name: 'resourceDetail',
+        component: _import('pages/resource/detail/detailOne')
+      },
+      {
+        path: '/keywordDetail',
+        name: 'keywordDetail',
+        component: _import('pages/keyword/detail')
       },
       {
         path: '/orders',

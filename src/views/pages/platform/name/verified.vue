@@ -3,12 +3,6 @@
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
-             add-title="已提现"
-             :add-template="addTemplate"
-             :form-options="formOptions"
-             @dialog-open="handleDialogOpen"
-             @row-add="handleRowAdd"
-             @dialog-cancel="handleDialogCancel"
              :loading="loading"
              :loading-options="loadingOptions"
              selection-row
@@ -25,7 +19,7 @@
                  @click="exportExcel">导出</el-button>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">提现时间</span>
+            style="margin-bottom: 5px">申请时间</span>
       <el-date-picker v-model="value2"
                       type="daterange"
                       align="right"
@@ -61,7 +55,7 @@
 </template>
 
 <script>
-import { getIdcardList, getIdcardDetail } from '@api/name'
+import { getIdcardList } from '@api/name'
 import myImg from '../../../../components/myCom/tableImg'
 export default {
   name: 'child2',
@@ -89,7 +83,15 @@ export default {
         },
         {
           title: '认证类别',
-          key: 'check_status'
+          key: 'check_status',
+          filters: [
+            { text: '个人', value: '个人' },
+            { text: '企业', value: '企业' }
+          ],
+          filterMethod (value, row) {
+            return row.check_status === value
+          },
+          filterPlacement: 'bottom-end'
         }
       ],
       outCoulum: [
@@ -210,13 +212,7 @@ export default {
         })
     },
     viewDetail ({ index, row }) {
-      getIdcardDetail({
-        'id': index
-      }).then(response => {
-        this.$router.push({ name: 'detail', query: { 'id': row.id } })
-        console.log(response, 'success') // 成功的返回
-      })
-        .catch(error => console.log(error, 'error')) // 失败的返回
+      this.$router.push({ name: 'userDetail', query: { 'id': row.id } })
     },
     query (item) {
       getIdcardList({

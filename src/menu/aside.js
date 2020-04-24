@@ -10,8 +10,15 @@ export default [
     title: '资源管理',
     icon: 'shopping-bag',
     children: [
-      { path: '/resourceRecommend', icon: 'share', title: '资源推荐' },
-      { path: '/resourceList', icon: 'reorder', title: '资源列表' }
+      { path: '/company', icon: 'reorder', title: '注册公司' },
+      { path: '/finance', icon: 'reorder', title: '财政纳税' },
+      { path: '/law', icon: 'reorder', title: '法律咨询' },
+      { path: '/career', icon: 'reorder', title: '职业规划' },
+      { path: '/talent', icon: 'reorder', title: '人才服务' },
+      { path: '/policy', icon: 'reorder', title: '政策解读' },
+      { path: '/partTime', icon: 'reorder', title: '兼职零工' },
+      { path: '/share', icon: 'reorder', title: '共享资源' },
+      { path: '/resourceRecommend', icon: 'share', title: '资源推荐' }
     ]
   },
   {
@@ -88,6 +95,11 @@ export default [
   {
     path: '/settings',
     title: '平台设置',
+    icon: 'cog'
+  },
+  {
+    path: '/agreement',
+    title: '协议管理',
     icon: 'cog'
   }
 ]

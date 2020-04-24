@@ -13,6 +13,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import D2Crud from '@d2-projects/d2-crud'
 import pluginExport from '@d2-projects/vue-table-export'
+import SplitPane from 'vue-splitpane'
 
 // 菜单和路由设置
 import router from './router'
@@ -26,6 +27,7 @@ Vue.use(VCharts)
 Vue.use(ElementUI)
 Vue.use(D2Crud)
 Vue.use(pluginExport)
+Vue.component('SplitPane', SplitPane)
 
 new Vue({
   router,

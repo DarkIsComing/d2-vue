@@ -17,3 +17,13 @@ export function stopUse (params) {
     params: { 'id': params }
   })
 }
+
+
+export function getKeywordDetail (params) {
+  console.log('传入的参数', params)
+  return request({
+    url: '/admin/keyword/detail/',
+    method: 'get',
+    params: params
+  })
+}

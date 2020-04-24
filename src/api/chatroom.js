@@ -1,19 +1,19 @@
-import request from "@/plugin/axios";
+import request from '@/plugin/axios'
 
-export function getChatRoomList(params) {
-  console.log("传入的参数", params);
+export function getChatRoomList (params) {
+  console.log('传入的参数', params)
   return request({
-    url: "/admin/chatroom/",
-    method: "get",
+    url: '/admin/chatroom/',
+    method: 'get',
     params: params
-  });
+  })
 }
 
-export function deleteChatRoom(params) {
-  console.log("传入的参数", params);
+export function deleteChatRoom (params) {
+  console.log('传入的参数', params)
   return request({
-    url: "/admin/chatroom/",
-    method: "delete",
+    url: '/admin/chatroom/',
+    method: 'delete',
     data: params
-  });
+  })
 }

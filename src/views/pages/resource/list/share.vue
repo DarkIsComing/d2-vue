@@ -7,29 +7,40 @@
 
       <el-button slot="header"
                  style="margin-bottom: 5px"
-                 @click="stops">停用</el-button>
+                 @click="stops">删除</el-button>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">注册时间</span>
-      <el-date-picker v-model="value2"
-                      type="daterange"
-                      align="right"
-                      value-format="yyyy-MM-dd"
-                      slot="header"
-                      unlink-panels
-                      range-separator="-"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期"
-                      :picker-options="pickerOptions">
+            style="margin-bottom: 5px">发布时间</span>
+      <el-date-picker v-model="value1"
+                      type="date"
+                      placeholder="选择日期">
       </el-date-picker>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">昵称/手机号</span>
+            style="margin-bottom: 5px">用户昵称</span>
       <el-input slot="header"
                 style="margin-bottom: 5px"
                 v-model="input"
-                placeholder="请输入用户昵称/手机号">
-
+                placeholder="请输入用户昵称">
+      </el-input>
+      <span class="demonstration"
+            slot="header"
+            style="margin-bottom: 5px">资源定位</span>
+      <el-select v-model="status"
+                 placeholder="请选择">
+        <el-option v-for="item in selectOptions"
+                   :key="item.value"
+                   :label="item.label"
+                   :value="item.value">
+        </el-option>
+      </el-select>
+      <span class="demonstration"
+            slot="header"
+            style="margin-bottom: 5px">资源城市</span>
+      <el-input slot="header"
+                style="margin-bottom: 5px"
+                v-model="city"
+                placeholder="请输入资源城市">
       </el-input>
       <el-button slot="header"
                  style="margin-bottom: 5px"
@@ -49,8 +60,8 @@
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
              :rowHandle="rowHandle"
+             @row-remove="handleRowRemove"
              @custom-emit-1="viewDetail"
-             @custom-emit-2="stopResource"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
              :options="options">
@@ -60,8 +71,8 @@
 </template>
 
 <script>
-import { getUserList, stopUse } from '@api/user'
-import myImg from '../../../components/myCom/tableImg'
+import { getResourceList, stopUse } from '@api/resourceList'
+import myImg from '../../../../components/myCom/tableImg'
 export default {
   components: {
     myImg
@@ -72,7 +83,7 @@ export default {
       select_list: [],
       columns: [
         {
-          title: '注册时间',
+          title: '发布时间',
           key: 'create_time',
           width: '180'
 
@@ -90,24 +101,26 @@ export default {
           key: 'use_name'
         },
         {
-          title: '用户手机号',
-          key: 'username'
+          title: '发布标题',
+          key: 'name'
         },
 
         {
-          title: '用户邀请数',
-          key: 'invite_count',
-          sortable: true
+          title: '资源城市',
+          key: 'map'
         },
         {
-          title: '已发布资源',
-          key: 'resource_count',
-          sortable: true
+          title: '资源定位',
+          key: 'status_text'
+        },
+        {
+          title: '是否保密',
+          key: 'lock'
         }
       ],
       outCoulum: [
         {
-          label: '注册时间',
+          label: '发布时间',
           prop: 'create_time'
         },
         {
@@ -115,16 +128,20 @@ export default {
           prop: 'use_name'
         },
         {
-          label: '用户手机号',
-          prop: 'username'
+          label: '发布标题',
+          prop: 'name'
         },
         {
-          label: '用户邀请数',
-          prop: 'invite_count'
+          label: '资源城市',
+          prop: 'map'
         },
         {
-          label: '已发布资源',
-          prop: 'resource_count'
+          label: '资源定位',
+          prop: 'status_text'
+        },
+        {
+          label: '是否保密',
+          prop: 'lock'
         }
       ],
       data: [],
@@ -148,6 +165,21 @@ export default {
           order: 'descending'
         }
       },
+      selectOptions: [{
+        value: '3',
+        label: '我分享'
+      }, {
+        value: '0',
+        label: '我提供'
+      }, {
+        value: '2',
+        label: '我悬赏'
+      }, {
+        value: '1',
+        label: '我需要'
+      }],
+      status: '',
+      city: '',
       // 自定义操作列
       rowHandle: {
         custom: [
@@ -165,69 +197,51 @@ export default {
           confirm: true
         }
       },
-      pickerOptions: {
-        shortcuts: [{
-          text: '最近一周',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近三个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      },
       value1: '',
-      value2: ''
+      sels: []
     }
   },
   methods: {
     handleSelectionChange (selection) {
       console.log('选择', selection)
-      // for (const i = 0; i < selection.length; i++) { this.select_list.push(selection[i].id) }
+      this.sels = selection
     },
     viewDetail ({ index, row }) {
-      this.$router.push({ name: 'userDetail', query: { 'id': row.id } })
-    },
-    // 单选停用
-    stopResource ({ index, row }) {
-      console.log('选择的一行:', index, row)
-      stopUse(row.id
-      ).then(response => {
-        this.data = response.data
-      }).catch(err => {
-        console.log('err', err)
-        this.loading = false
-      })
+      this.$router.push({ name: 'resourceDetail', query: { 'id': row.id } })
     },
     // 多选停用
     stops () {
-      // this.select_list = handleSelectionChange(selection)
-      stopUse({
-        'id': ''
-      }).then(response => {
-        this.data = response.data
-        this.pagination.total = response.count
-        this.loading = false
-      }).catch(err => {
-        console.log('err', err)
-        this.loading = false
+      console.log(this.sels, typeof (this.sels))
+      let ids = this.sels.map(item => item.id)
+      console.log('ids:', ids, typeof (ids))
+      this.$confirm('确认删除选中记录吗？', '提示', {
+        type: 'warning'
       })
+        .then(() => {
+          const para = { 'id': ids }
+          stopUse(para).then(res => {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            getResourceList({
+              'create_time': '',
+              'map': '',
+              'status': '',
+              'item': '',
+              'page': 1,
+              'size': 20,
+              'type_status': 7
+            })
+              .then(response => {
+                this.data = response.data
+                this.pagination.total = response.count
+                console.log(response, 'success') // 成功的返回
+              })
+              .catch(error => console.log(error, 'error')) // 失败的返回
+          })
+        })
+        .catch(() => { })
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage
@@ -235,12 +249,14 @@ export default {
     },
     fetchData (currentPage) {
       this.loading = true
-      getUserList({
-        'start_time': '',
-        'end_time': '',
+      getResourceList({
+        'create_time': '',
+        'map': '',
+        'status': '',
         'item': '',
         'page': currentPage,
-        'size': 20
+        'size': 20,
+        'type_status': 7
       }).then(response => {
         this.data = response.data
         this.pagination.total = response.count
@@ -249,6 +265,25 @@ export default {
         console.log('err', err)
         this.loading = false
       })
+    },
+    handleRowRemove ({ index, row }, done) {
+      setTimeout(() => {
+        console.log(index)
+        console.log(row)
+        stopUse({
+          'id': Array.of(row.id)
+        })
+          .then(response => {
+            console.log(response, 'success') // 成功的返回
+          })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+        done()
+      }, 300)
     },
     exportExcel () {
       console.log(this.columns, this.data)
@@ -264,12 +299,15 @@ export default {
         })
     },
     query (item) {
-      getUserList({
-        'start_time': this.value2[0],
-        'end_time': this.value2[1],
+      console.log(this.input, this.value1, this.city, this.status)
+      getResourceList({
+        'create_time': this.value1,
         'item': this.input,
+        'map': this.city,
+        'status': this.status,
         'page': 1,
-        'size': 20
+        'size': 20,
+        'type_status': 7
       })
         .then(response => {
           this.data = response.data
@@ -280,13 +318,17 @@ export default {
     // 重置
     reset () {
       this.input = ''
-      this.value2 = ''
-      getUserList({
-        'start_time': '',
-        'end_time': '',
+      this.value1 = ''
+      this.city = ''
+      this.status = ''
+      getResourceList({
+        'create_time': '',
+        'map': '',
+        'status': '',
         'item': '',
         'page': 1,
-        'size': 20
+        'size': 20,
+        'type_status': 7
       })
         .then(response => {
           this.data = response.data
@@ -297,12 +339,14 @@ export default {
   },
 
   mounted: function () {
-    getUserList({
-      'start_time': '',
-      'end_time': '',
+    getResourceList({
+      'create_time': '',
+      'map': '',
+      'status': '',
       'item': '',
       'page': 1,
-      'size': 20
+      'size': 20,
+      'type_status': 7
     })
       .then(response => {
         this.data = response.data

@@ -1,5 +1,5 @@
 <template>
-  <div class="child2">
+  <div class="child3">
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
@@ -8,25 +8,25 @@
              selection-row
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
+             :rowHandle="rowHandle"
+             @row-remove="handleRowRemove"
+             @custom-emit-1="viewDetail"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
              :options="options">
       <el-button slot="header"
                  style="margin-bottom: 5px"
                  @click="exportExcel">导出</el-button>
+
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
+                 @click="stops">删除</el-button>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">提现时间</span>
-      <el-date-picker v-model="value2"
-                      type="daterange"
-                      align="right"
-                      value-format="yyyy-MM-dd"
-                      slot="header"
-                      unlink-panels
-                      range-separator="-"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期"
-                      :picker-options="pickerOptions">
+            style="margin-bottom: 5px">发布时间</span>
+      <el-date-picker v-model="value1"
+                      type="date"
+                      placeholder="选择日期">
       </el-date-picker>
       <span class="demonstration"
             slot="header"
@@ -35,7 +35,25 @@
                 style="margin-bottom: 5px"
                 v-model="input"
                 placeholder="请输入用户昵称">
-
+      </el-input>
+      <span class="demonstration"
+            slot="header"
+            style="margin-bottom: 5px">资源定位</span>
+      <el-select v-model="status"
+                 placeholder="请选择">
+        <el-option v-for="item in selectOptions"
+                   :key="item.value"
+                   :label="item.label"
+                   :value="item.value">
+        </el-option>
+      </el-select>
+      <span class="demonstration"
+            slot="header"
+            style="margin-bottom: 5px">资源城市</span>
+      <el-input slot="header"
+                style="margin-bottom: 5px"
+                v-model="city"
+                placeholder="请输入资源城市">
       </el-input>
       <el-button slot="header"
                  style="margin-bottom: 5px"
@@ -46,25 +64,27 @@
                  style="margin-bottom: 5px"
                  @click="reset">重置</el-button>
     </d2-crud>
-
     <myImg></myImg>
   </div>
 </template>
 
 <script>
-import { getCashList } from '@api/cash'
-import myImg from '../../../components/myCom/tableImg'
+import { getResourceList, stopUse } from '@api/resourceList'
+import myImg from '../../../../components/myCom/tableImg'
 export default {
-  name: 'child2',
+  components: {
+    myImg
+  },
   data () {
     return {
       input: '',
+      select_list: [],
       columns: [
         {
-          title: '提现时间',
+          title: '发布时间',
           key: 'create_time',
-          width: '180',
-          sortable: true
+          width: '180'
+
         },
         {
           title: '用户头像',
@@ -79,21 +99,26 @@ export default {
           key: 'use_name'
         },
         {
-          title: '提现金额',
-          key: 'amount'
+          title: '发布标题',
+          key: 'name'
+        },
+
+        {
+          title: '资源城市',
+          key: 'map'
         },
         {
-          title: '提现到账时间',
-          key: 'trans_date'
-        },
-        {
-          title: '状态',
+          title: '资源定位',
           key: 'status_text'
+        },
+        {
+          title: '是否保密',
+          key: 'lock'
         }
       ],
       outCoulum: [
         {
-          label: '申请时间',
+          label: '发布时间',
           prop: 'create_time'
         },
         {
@@ -101,16 +126,20 @@ export default {
           prop: 'use_name'
         },
         {
-          label: '提现金额',
-          prop: 'amount'
+          label: '发布标题',
+          prop: 'name'
         },
         {
-          label: '提现到账时间',
-          prop: 'trans_date'
+          label: '资源城市',
+          prop: 'map'
         },
         {
-          label: '状态',
+          label: '资源定位',
           prop: 'status_text'
+        },
+        {
+          label: '是否保密',
+          prop: 'lock'
         }
       ],
       data: [],
@@ -134,55 +163,101 @@ export default {
           order: 'descending'
         }
       },
-      pickerOptions: {
-        shortcuts: [{
-          text: '最近一周',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
+      selectOptions: [{
+        value: '3',
+        label: '行业信息'
+      }, {
+        value: '0',
+        label: '我提供注册'
+      }, {
+        value: '5',
+        label: '愿意付费咨询'
+      }, {
+        value: '4',
+        label: '提供付费咨询'
+      }, {
+        value: '1',
+        label: '我需要注册'
+      }],
+      status: '',
+      city: '',
+      // 自定义操作列
+      rowHandle: {
+        custom: [
+          {
+            text: '查看详情',
+            type: 'Success',
+            size: 'small',
+            emit: 'custom-emit-1'
           }
-        }, {
-          text: '最近一个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近三个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }]
+        ],
+        remove: {
+          icon: 'el-icon-delete',
+          size: 'small',
+          fixed: 'right',
+          confirm: true
+        }
       },
       value1: '',
-      value2: ''
+      sels: []
     }
   },
   methods: {
     handleSelectionChange (selection) {
       console.log('选择', selection)
+      this.sels = selection
+    },
+    viewDetail ({ index, row }) {
+      this.$router.push({ name: 'resourceDetail', query: { 'id': row.id } })
+    },
+    // 多选停用
+    stops () {
+      console.log(this.sels, typeof (this.sels))
+      let ids = this.sels.map(item => item.id)
+      console.log('ids:', ids, typeof (ids))
+      this.$confirm('确认删除选中记录吗？', '提示', {
+        type: 'warning'
+      })
+        .then(() => {
+          const para = { 'id': ids }
+          stopUse(para).then(res => {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            getResourceList({
+              'create_time': '',
+              'map': '',
+              'status': '',
+              'item': '',
+              'page': 1,
+              'size': 20,
+              'type_status': 0
+            })
+              .then(response => {
+                this.data = response.data
+                this.pagination.total = response.count
+                console.log(response, 'success') // 成功的返回
+              })
+              .catch(error => console.log(error, 'error')) // 失败的返回
+          })
+        })
+        .catch(() => { })
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage
       this.fetchData(currentPage)
     },
     fetchData (currentPage) {
-      console.log('当前页:', currentPage)
       this.loading = true
-      getCashList({
-        'start_time': '',
-        'end_time': '',
+      getResourceList({
+        'create_time': '',
+        'map': '',
+        'status': '',
         'item': '',
         'page': currentPage,
         'size': 20,
-        'status': 0
+        'type_status': 0
       }).then(response => {
         this.data = response.data
         this.pagination.total = response.count
@@ -192,12 +267,31 @@ export default {
         this.loading = false
       })
     },
+    handleRowRemove ({ index, row }, done) {
+      setTimeout(() => {
+        console.log(index)
+        console.log(row)
+        stopUse({
+          'id': Array.of(row.id)
+        })
+          .then(response => {
+            console.log(response, 'success') // 成功的返回
+          })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+        done()
+      }, 300)
+    },
     exportExcel () {
       console.log(this.columns, this.data)
       this.$export.excel({
         columns: this.outCoulum,
         data: this.data,
-        header: '已提现列表'
+        header: '用户列表'
 
       })
         .then(() => {
@@ -206,17 +300,18 @@ export default {
         })
     },
     query (item) {
-      getCashList({
-        'start_time': this.value2[0],
-        'end_time': this.value2[1],
+      console.log(this.input, this.value1, this.city, this.status)
+      getResourceList({
+        'create_time': this.value1,
         'item': this.input,
+        'map': this.city,
+        'status': this.status,
         'page': 1,
         'size': 20,
-        'status': 0
+        'type_status': 0
       })
         .then(response => {
           this.data = response.data
-          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -224,34 +319,35 @@ export default {
     // 重置
     reset () {
       this.input = ''
-      this.value2 = ''
-      getCashList({
-        'start_time': '',
-        'end_time': '',
-        'item': this.input,
+      this.value1 = ''
+      this.city = ''
+      this.status = ''
+      getResourceList({
+        'create_time': '',
+        'map': '',
+        'status': '',
+        'item': '',
         'page': 1,
         'size': 20,
-        'status': 0
+        'type_status': 0
       })
         .then(response => {
           this.data = response.data
-          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
     }
   },
-  components: {
-    myImg
-  },
-  mounted () {
-    getCashList({
-      'start_time': '',
-      'end_time': '',
+
+  mounted: function () {
+    getResourceList({
+      'create_time': '',
+      'map': '',
+      'status': '',
       'item': '',
       'page': 1,
       'size': 20,
-      'status': 0
+      'type_status': 0
     })
       .then(response => {
         this.data = response.data
@@ -262,7 +358,6 @@ export default {
   }
 }
 </script>
-
 
 <style>
 .el-table .warning-row {

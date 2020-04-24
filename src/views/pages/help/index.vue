@@ -1,7 +1,37 @@
 <template>
-  <d2-container>
-    <template slot="header">header</template>
-    辅助管理
-    <template slot="footer">footer</template>
-  </d2-container>
+  <el-table :data="tableData"
+            style="width: 200px">
+    <el-table-column prop="date">
+    </el-table-column>
+    <el-table-column prop="name">
+    </el-table-column>
+    <el-table-column prop="address">
+    </el-table-column>
+  </el-table>
 </template>
+
+  <script>
+export default {
+  data () {
+    return {
+      tableData: [{
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1517 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }]
+    }
+  }
+}
+  </script>

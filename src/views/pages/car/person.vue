@@ -1,14 +1,9 @@
 <template>
   <div class="child2">
+    <!-- <d2-container> -->
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
-             add-title="已提现"
-             :add-template="addTemplate"
-             :form-options="formOptions"
-             @dialog-open="handleDialogOpen"
-             @row-add="handleRowAdd"
-             @dialog-cancel="handleDialogCancel"
              :loading="loading"
              :loading-options="loadingOptions"
              selection-row
@@ -39,11 +34,11 @@
       </el-date-picker>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">用户昵称</span>
+            style="margin-bottom: 5px">昵称/关键字</span>
       <el-input slot="header"
                 style="margin-bottom: 5px"
                 v-model="input"
-                placeholder="请输入用户昵称">
+                placeholder="请输入用户昵称/地点关键字">
 
       </el-input>
       <el-button slot="header"
@@ -55,13 +50,14 @@
                  style="margin-bottom: 5px"
                  @click="reset">重置</el-button>
     </d2-crud>
-
     <myImg></myImg>
+    <!-- </d2-container> -->
   </div>
+
 </template>
 
 <script>
-import { getCarList, getCarDetail } from '@api/car'
+import { getCarList, deleteCar } from '@api/car'
 import myImg from '../../../components/myCom/tableImg'
 export default {
   name: 'child2',
@@ -71,13 +67,13 @@ export default {
       columns: [
         {
           title: '发布时间',
-          key: 'create_time',
+          key: 'start_time',
           width: '180',
           sortable: true
         },
         {
           title: '用户头像',
-          key: 'user_image',
+          key: 'car_image',
           width: '180',
           component: {
             name: myImg
@@ -89,21 +85,21 @@ export default {
         },
         {
           title: '出发地',
-          key: 'check_status'
+          key: 'start_area'
         },
         {
           title: '目的地',
-          key: 'check_status'
+          key: 'end_area'
         },
         {
           title: '是否免费',
-          key: 'tag',
+          key: 'pay_status',
           filters: [
-            { text: '平摊过路费，邮费', value: '平摊过路费，邮费' },
-            { text: '免费', value: '免费' }
+            { text: '平摊过路费、油费', value: '平摊过路费、油费' },
+            { text: '希望免费', value: '希望免费' }
           ],
           filterMethod (value, row) {
-            return row.tag === value
+            return row.pay_status === value
           },
           filterPlacement: 'bottom-end'
         }
@@ -111,7 +107,7 @@ export default {
       outCoulum: [
         {
           label: '发布时间',
-          prop: 'create_time'
+          prop: 'start_time'
         },
         {
           label: '用户昵称',
@@ -119,15 +115,15 @@ export default {
         },
         {
           label: '出发地',
-          prop: 'check_status'
+          prop: 'start_area'
         },
         {
           label: '目的地',
-          prop: 'use_name'
+          prop: 'end_area'
         },
         {
           label: '是否免费',
-          prop: 'tag'
+          prop: 'pay_status'
         }
       ],
       data: [],
@@ -144,7 +140,7 @@ export default {
       },
       options: {
         strip: true,
-        height: '650',
+        height: '500',
         highlightCurrentRow: true,
         defaultSort: {
           prop: 'date',
@@ -216,10 +212,10 @@ export default {
         'item': '',
         'page': currentPage,
         'size': 20,
-        'status': 2
+        'status': 1
       }).then(response => {
         this.data = response.data
-        this.pagination.total = response.count
+        this.pagination.total = response.more.count
         this.loading = false
       }).catch(err => {
         console.log('err', err)
@@ -231,7 +227,7 @@ export default {
       this.$export.excel({
         columns: this.outCoulum,
         data: this.data,
-        header: '已审核实名认证列表'
+        header: '人找车列表'
 
       })
         .then(() => {
@@ -239,14 +235,27 @@ export default {
           this.$message('导出表格成功')
         })
     },
+    handleRowRemove ({ index, row }, done) {
+      setTimeout(() => {
+        console.log(index)
+        console.log(row)
+        deleteCar({
+          'id': row.id
+        })
+          .then(response => {
+            console.log(response, 'success') // 成功的返回
+          })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+        done()
+      }, 300)
+    },
     viewDetail ({ index, row }) {
-      getCarDetail({
-        'id': index
-      }).then(response => {
-        this.$router.push({ name: 'detail', query: { 'id': row.id } })
-        console.log(response, 'success') // 成功的返回
-      })
-        .catch(error => console.log(error, 'error')) // 失败的返回
+      this.$router.push({ name: 'carDetail', query: { 'id': row.id, 'status': 1 } })
     },
     query (item) {
       getCarList({
@@ -255,11 +264,11 @@ export default {
         'item': this.input,
         'page': 1,
         'size': 20,
-        'status': 2
+        'status': 1
       })
         .then(response => {
           this.data = response.data
-          this.pagination.total = response.count
+          this.pagination.total = response.more.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -274,25 +283,14 @@ export default {
         'item': this.input,
         'page': 1,
         'size': 20,
-        'status': 2
+        'status': 1
       })
         .then(response => {
           this.data = response.data
-          this.pagination.total = response.count
+          this.pagination.total = response.more.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
-    },
-    addRow () {
-      this.$refs.d2Crud.showDialog({
-        mode: 'add'
-      })
-    },
-    handleDialogOpen ({ mode }) {
-      this.$message({
-        message: '打开模态框，模式为：' + mode,
-        type: 'success'
-      })
     }
   },
   components: {
@@ -305,11 +303,11 @@ export default {
       'item': '',
       'page': 1,
       'size': 20,
-      'status': 2
+      'status': 1
     })
       .then(response => {
         this.data = response.data
-        this.pagination.total = response.count
+        this.pagination.total = response.more.count
         console.log(response, 'success') // 成功的返回
       })
       .catch(error => console.log(error, 'error')) // 失败的返回

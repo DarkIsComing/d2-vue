@@ -3,25 +3,22 @@
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
-             add-title="待提现"
-             :add-template="addTemplate"
-             :form-options="formOptions"
-             @dialog-open="handleDialogOpen"
-             @row-add="handleRowAdd"
-             @dialog-cancel="handleDialogCancel"
              :loading="loading"
              :loading-options="loadingOptions"
              selection-row
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
              :rowHandle="rowHandle"
-             @custom-emit-1="handleCustomEvent"
+             @custom-emit-1="tranfer"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
              :options="options">
       <el-button slot="header"
                  style="margin-bottom: 5px"
                  @click="exportExcel">导出</el-button>
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
+                 @click="tranfers">转账</el-button>
       <span class="demonstration"
             slot="header"
             style="margin-bottom: 5px">提现时间</span>
@@ -59,7 +56,7 @@
 </template>
 
 <script>
-import { getCashList } from '@api/cash'
+import { getCashList, cashTranfer } from '@api/cash'
 import myImg from '../../../components/myCom/tableImg'
 export default {
   name: 'child1',
@@ -129,7 +126,7 @@ export default {
       rowHandle: {
         custom: [
           {
-            text: '查看详情',
+            text: '开始转账',
             type: 'primary',
             size: 'small',
             emit: 'custom-emit-1'
@@ -194,6 +191,14 @@ export default {
         this.loading = false
       })
     },
+    tranfer ({ index, row }) {
+      cashTranfer({
+        'id': row.id
+      }).then(response => {
+        console.log(response, 'success') // 成功的返回
+      })
+        .catch(error => console.log(error, 'error')) // 失败的返回
+    },
     exportExcel () {
       console.log(this.columns, this.data)
       this.$export.excel({
@@ -241,17 +246,6 @@ export default {
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
-    },
-    addRow () {
-      this.$refs.d2Crud.showDialog({
-        mode: 'add'
-      })
-    },
-    handleDialogOpen ({ mode }) {
-      this.$message({
-        message: '打开模态框，模式为：' + mode,
-        type: 'success'
-      })
     }
   },
   components: {

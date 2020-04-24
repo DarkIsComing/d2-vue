@@ -101,8 +101,16 @@ export default {
           prop: 'use_name'
         },
         {
-          label: '认证类别',
-          prop: 'check_status'
+          title: '认证类别',
+          key: 'check_status',
+          filters: [
+            { text: '个人', value: '个人' },
+            { text: '企业', value: '企业' }
+          ],
+          filterMethod (value, row) {
+            return row.check_status === value
+          },
+          filterPlacement: 'bottom-end'
         }
       ],
       data: [],
@@ -209,8 +217,7 @@ export default {
         })
     },
     viewDetail ({ index, row }) {
-      this.$router.push({ name: 'detail', query: { 'id': row.id } })
-      console.log(index, row)
+      this.$router.push({ name: 'nameDetail', query: { 'id': row.id } })
     },
     query (item) {
       getIdcardList({

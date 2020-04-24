@@ -4,10 +4,6 @@
       <el-button slot="header"
                  style="margin-bottom: 5px"
                  @click="exportExcel">导出</el-button>
-
-      <el-button slot="header"
-                 style="margin-bottom: 5px"
-                 @click="stop">停用</el-button>
       <span class="demonstration"
             slot="header"
             style="margin-bottom: 5px">订单生成时间</span>
@@ -43,12 +39,6 @@
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
-             add-title="新增广告"
-             :add-template="addTemplate"
-             :form-options="formOptions"
-             @dialog-open="handleDialogOpen"
-             @row-add="handleRowAdd"
-             @dialog-cancel="handleDialogCancel"
              :loading="loading"
              :loading-options="loadingOptions"
              selection-row
@@ -73,25 +63,25 @@ export default {
         {
           title: '订单生成时间',
           key: 'create_time',
-          width: '180',
-          sortable: true
+          width: '180'
         },
         {
           title: '订单编号',
-          key: 'free',
+          key: 'id',
           width: '180'
         },
         {
           title: '需求方昵称',
-          key: 'amount'
-        },
-        {
-          title: '供给方昵称',
           key: 'use_name'
         },
         {
+          title: '供给方昵称',
+          key: 'receive_use_name'
+        },
+        {
           title: '交易金额',
-          key: 'username'
+          key: 'amount',
+          sortable: true
         }
       ],
       outCoulum: [
@@ -101,19 +91,19 @@ export default {
         },
         {
           label: '订单编号',
-          prop: 'free'
+          prop: 'id'
         },
         {
           label: '需求方昵称',
-          prop: 'amount'
-        },
-        {
-          label: '供给方昵称',
           prop: 'use_name'
         },
         {
+          label: '供给方昵称',
+          prop: 'receive_use_name'
+        },
+        {
           label: '交易金额',
-          prop: 'username'
+          prop: 'amount'
         }
       ],
       data: [],
@@ -146,13 +136,7 @@ export default {
             size: 'small',
             emit: 'custom-emit-1'
           }
-        ],
-        remove: {
-          icon: 'el-icon-delete',
-          size: 'small',
-          fixed: 'right',
-          confirm: true
-        }
+        ]
       },
       pickerOptions: {
         shortcuts: [{
@@ -254,17 +238,6 @@ export default {
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
-    },
-    addRow () {
-      this.$refs.d2Crud.showDialog({
-        mode: 'add'
-      })
-    },
-    handleDialogOpen ({ mode }) {
-      this.$message({
-        message: '打开模态框，模式为：' + mode,
-        type: 'success'
-      })
     }
   },
 

@@ -3,7 +3,7 @@ import request from '@/plugin/axios'
 export function getOrderList (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/invite/',
+    url: '/admin/order/',
     method: 'get',
     params: params
   })
