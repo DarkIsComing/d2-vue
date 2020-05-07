@@ -70,14 +70,11 @@ export default {
       columns: [
         {
           title: '申请时间',
-          key: 'create_time',
-          width: '180',
-          sortable: true
+          key: 'create_time'
         },
         {
           title: '用户头像',
           key: 'user_image',
-          width: '180',
           component: {
             name: myImg
           }

@@ -3,32 +3,21 @@
     <template slot="header">
       <el-button slot="header"
                  style="margin-bottom: 5px"
+                 @click="addRow">新增</el-button>
+      <el-button slot="header"
+                 style="margin-bottom: 5px"
                  @click="exportExcel">导出</el-button>
 
       <el-button slot="header"
                  style="margin-bottom: 5px"
-                 @click="stop">停用</el-button>
+                 @click="stop">删除</el-button>
       <span class="demonstration"
             slot="header"
-            style="margin-bottom: 5px">邀请时间</span>
-      <el-date-picker v-model="value2"
-                      type="daterange"
-                      value-format="yyyy-MM-dd"
-                      align="right"
-                      slot="header"
-                      unlink-panels
-                      range-separator="-"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期"
-                      :picker-options="pickerOptions">
-      </el-date-picker>
-      <span class="demonstration"
-            slot="header"
-            style="margin-bottom: 5px">邀请对象</span>
+            style="margin-bottom: 5px">敏感字内容</span>
       <el-input slot="header"
                 style="margin-bottom: 5px"
                 v-model="input"
-                placeholder="请输入邀请对象/手机号">
+                placeholder="请输入敏感字内容">
 
       </el-input>
       <el-button slot="header"
@@ -43,7 +32,7 @@
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
-             add-title="新增广告"
+             add-title="新增敏感词"
              :add-template="addTemplate"
              :form-options="formOptions"
              @dialog-open="handleDialogOpen"
@@ -55,60 +44,29 @@
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
              :rowHandle="rowHandle"
-             @custom-emit-1="handleCustomEvent"
+             @row-remove="handleRowRemove"
+             @custom-emit-1="viewDetail"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
              :options="options">
     </d2-crud>
-    <myImg></myImg>
   </d2-container>
 </template>
 
 <script>
-import { getInviteList } from '@api/invite'
-import myImg from '../../../../components/myCom/tableImg'
+import { getSensitiveList, deleteSensitive, postSensitive } from '@api/sensitive'
+
 export default {
-  components: {
-    myImg
-  },
+
   data () {
     return {
       input: '',
       columns: [
+
         {
-          title: '发布时间',
-          key: 'create_time',
-          width: '180',
-          sortable: true
-        },
-        {
-          title: '用户头像',
-          key: 'user_image',
-          width: '180',
-          component: {
-            name: myImg
-          }
-        },
-        {
-          title: '用户昵称',
-          key: 'use_name',
+          title: '敏感字内容',
+          key: 'name',
           width: '180'
-        },
-        {
-          title: '发布标题',
-          key: 'amount'
-        },
-        {
-          title: '资源城市',
-          key: 'use_name'
-        },
-        {
-          title: '资源种类',
-          key: 'username'
-        },
-        {
-          title: '是否保密',
-          key: 'username'
         }
       ],
       outCoulum: [
@@ -117,20 +75,12 @@ export default {
           prop: 'create_time'
         },
         {
-          label: '用户昵称',
-          prop: 'free'
+          label: '关键字内容',
+          prop: 'name'
         },
         {
-          label: '发布标题',
-          prop: 'amount'
-        },
-        {
-          label: '资源城市',
-          prop: 'use_name'
-        },
-        {
-          label: '是否保密',
-          prop: 'username'
+          label: '关键字资源数',
+          prop: 'count'
         }
       ],
       data: [],
@@ -156,48 +106,60 @@ export default {
       },
       // 自定义操作列
       rowHandle: {
-        custom: [
-          {
-            text: '删除',
-            type: 'danger ',
-            size: 'small',
-            emit: 'custom-emit-1'
-          }
-        ]
+        remove: {
+          icon: 'el-icon-delete',
+          size: 'small',
+          fixed: 'right',
+          confirm: true
+        }
       },
-      pickerOptions: {
-        shortcuts: [{
-          text: '最近一周',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近三个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }]
+      addTemplate: {
+        name: {
+          title: '敏感词',
+          value: ''
+        }
+      },
+      formOptions: {
+        labelWidth: '80px',
+        labelPosition: 'center',
+        saveLoading: false
       },
       value1: '',
-      value2: ''
+      value2: '',
+      sels: []
     }
   },
   methods: {
+    stop () {
+      let ids = this.sels.map(item => item.id)
+      this.$confirm('确认删除选中记录吗？', '提示', {
+        type: 'warning'
+      })
+        .then(() => {
+          const para = { 'id': ids }
+          deleteSensitive(para).then(res => {
+            console.log(res, 'success') // 成功的返回
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            getSensitiveList({
+              'item': '',
+              'page': this.pagination.currentPage,
+              'size': 20
+            })
+              .then(response => {
+                this.data = response.data
+                this.pagination.total = response.count
+                console.log(response, 'success') // 成功的返回
+              })
+              .catch(error => console.log(error, 'error')) // 失败的返回
+          })
+        })
+        .catch(() => { })
+    },
     handleSelectionChange (selection) {
+      this.sels = selection
       console.log('选择', selection)
     },
     paginationCurrentChange (currentPage) {
@@ -206,10 +168,8 @@ export default {
     },
     fetchData (currentPage) {
       this.loading = true
-      getInviteList({
-        'start_time': '',
-        'end_time': '',
-        'item': '',
+      getSensitiveList({
+        'item': this.input,
         'page': currentPage,
         'size': 20
       }).then(response => {
@@ -222,12 +182,32 @@ export default {
         this.loading = false
       })
     },
+    handleRowRemove ({ index, row }, done) {
+      setTimeout(() => {
+        console.log(index)
+        console.log(row)
+        deleteSensitive({
+          'id': Array.of(row.id)
+        })
+          .then(response => {
+            this.pagination.total = this.pagination.total - 1
+            console.log(response, 'success') // 成功的返回
+          })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+        done()
+      }, 300)
+    },
     exportExcel () {
       console.log(this.columns, this.data)
       this.$export.excel({
         columns: this.outCoulum,
         data: this.data,
-        header: '邀请记录列表'
+        header: '敏感字列表'
 
       })
         .then(() => {
@@ -236,32 +216,33 @@ export default {
         })
     },
     query (item) {
-      getInviteList({
-        'start_time': this.value2[0],
-        'end_time': this.value2[1],
+      getSensitiveList({
         'item': this.input,
         'page': 1,
         'size': 20
       })
         .then(response => {
           this.data = response.data
+          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
     },
+    viewDetail ({ index, row }) {
+      this.$router.push({ name: 'keywordDetail', query: { 'id': row.id, 'type_status': 0 } })
+    },
     // 重置
     reset () {
       this.input = ''
-      this.value2 = ''
-      getInviteList({
-        'start_time': '',
-        'end_time': '',
+      getSensitiveList({
+
         'item': this.input,
         'page': 1,
         'size': 20
       })
         .then(response => {
           this.data = response.data
+          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -276,13 +257,52 @@ export default {
         message: '打开模态框，模式为：' + mode,
         type: 'success'
       })
+    },
+    handleRowAdd (row, done) {
+      this.formOptions.saveLoading = true
+      setTimeout(() => {
+        console.log(row)
+        postSensitive({
+          'name': row.name
+        }).then(response => {
+          console.log(response, 'success') // 成功的返回
+        })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+        this.$message({
+          message: '保存成功',
+          type: 'success'
+        })
+
+        // done可以传入一个对象来修改提交的某个字段
+        done({
+          address: '我是通过done事件传入的数据！'
+
+        })
+        getSensitiveList({
+          'item': '',
+          'page': 1,
+          'size': 20
+        })
+          .then(response => {
+            this.data = response.data
+            this.pagination.total = response.count
+            console.log(response, 'success') // 成功的返回
+          })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+        this.formOptions.saveLoading = false
+      }, 300)
+    },
+    handleDialogCancel (done) {
+      this.$message({
+        message: '取消保存',
+        type: 'warning'
+      })
+      done()
     }
   },
 
   mounted: function () {
-    getInviteList({
-      'start_time': '',
-      'end_time': '',
+    getSensitiveList({
       'item': '',
       'page': 1,
       'size': 20
@@ -342,3 +362,4 @@ span.demonstration {
   background-color: white;
 }
 </style>
+

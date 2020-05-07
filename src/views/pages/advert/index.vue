@@ -315,9 +315,10 @@ export default {
         console.log(index)
         console.log(row)
         deleteAdvert({
-          'id': index
+          'id': Array.of(row.id)
         })
           .then(response => {
+            this.pagination.total = this.pagination.total - 1
             console.log(response, 'success') // 成功的返回
           })
           .catch(error => console.log(error, 'error')) // 失败的返回

@@ -9,11 +9,11 @@ export function getInviteList (params) {
   })
 }
 
-export function stopUse (params) {
+export function deleteInvite (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/complaint/',
+    url: '/admin/invite/',
     method: 'delete',
-    params: { 'id': params }
+    data: params
   })
 }

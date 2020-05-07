@@ -24,7 +24,7 @@
       <el-input slot="header"
                 style="margin-bottom: 5px"
                 v-model="input"
-                placeholder="请输入用户名/操作内容关键字">
+                placeholder="请输入用户名/操作内容">
 
       </el-input>
       <el-button slot="header"
@@ -73,8 +73,7 @@ export default {
         {
           title: '用户姓名',
           key: 'name',
-          width: '180',
-          sortable: true
+          width: '180'
         },
         {
           title: 'ip地址',

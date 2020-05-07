@@ -1,6 +1,66 @@
 <template>
   <div class="child2">
     <!-- <d2-container> -->
+    <div class="head_card">
+
+      <div class="card">
+        <div class="card_top">
+          <div class="card_title">
+            人找车资源量
+          </div>
+          <div class="card_text">{{count}}</div>
+        </div>
+        <div class="card_bottom">
+          <chart ref="chart5"
+                 :options="ChartOptions5"
+                 :auto-resize="true"></chart>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card_top">
+          <div class="card_title">
+            人找车免费量
+          </div>
+          <div class="card_text">{{free_count}}</div>
+        </div>
+        <div class="card_bottom">
+          <chart ref="chart6"
+                 :options="ChartOptions6"
+                 :auto-resize="true"></chart>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card_top">
+          <div class="card_title">
+            用户预约量
+          </div>
+          <div class="card_text">{{order_count}}</div>
+        </div>
+        <div class="card_bottom">
+          <chart ref="chart7"
+                 :options="ChartOptions7"
+                 :auto-resize="true"></chart>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card_top">
+          <div class="card_title">
+            用户沟通量
+          </div>
+          <div class="card_text">{{success_count}}</div>
+        </div>
+        <div class="card_bottom">
+          <chart ref="chart8"
+                 :options="ChartOptions8"
+                 :auto-resize="true"></chart>
+        </div>
+      </div>
+
+    </div>
+    <el-divider></el-divider>
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
@@ -58,12 +118,16 @@
 
 <script>
 import { getCarList, deleteCar } from '@api/car'
-import myImg from '../../../components/myCom/tableImg'
+import myImg from '../../../components/myCom/carImg'
 export default {
   name: 'child2',
   data () {
     return {
       input: '',
+      count: '',
+      free_count: '',
+      order_count: '',
+      success_count: '',
       columns: [
         {
           title: '发布时间',
@@ -146,6 +210,82 @@ export default {
           prop: 'date',
           order: 'descending'
         }
+      },
+      ChartOptions5: {
+        xAxis: {
+          type: 'category',
+          data: ['1', '2', '3', '4', '5', '6'],
+          show: false
+        },
+        yAxis: {
+          show: false
+
+        },
+        series: [{
+          data: [],
+          type: 'bar',
+          showBackground: false,
+          backgroundStyle: {
+            color: 'rgba(220, 220, 220, 0.8)'
+          }
+        }]
+      },
+      ChartOptions6: {
+        xAxis: {
+          type: 'category',
+          data: ['1', '2', '3', '4', '5', '6'],
+          show: false
+        },
+        yAxis: {
+          show: false
+
+        },
+        series: [{
+          data: [],
+          type: 'bar',
+          showBackground: false,
+          backgroundStyle: {
+            color: 'rgba(220, 220, 220, 0.8)'
+          }
+        }]
+      },
+      ChartOptions7: {
+        xAxis: {
+          type: 'category',
+          data: ['1', '2', '3', '4', '5', '6'],
+          show: false
+        },
+        yAxis: {
+          show: false
+
+        },
+        series: [{
+          data: [],
+          type: 'bar',
+          showBackground: false,
+          backgroundStyle: {
+            color: 'rgba(220, 220, 220, 0.8)'
+          }
+        }]
+      },
+      ChartOptions8: {
+        xAxis: {
+          type: 'category',
+          data: ['1', '2', '3', '4', '5', '6'],
+          show: false
+        },
+        yAxis: {
+          show: false
+
+        },
+        series: [{
+          data: [],
+          type: 'bar',
+          showBackground: false,
+          backgroundStyle: {
+            color: 'rgba(220, 220, 220, 0.8)'
+          }
+        }]
       },
       // 自定义操作列
       rowHandle: {
@@ -240,9 +380,10 @@ export default {
         console.log(index)
         console.log(row)
         deleteCar({
-          'id': row.id
+          'id': Array.of(row.id)
         })
           .then(response => {
+            this.pagination.total = this.pagination.total - 1
             console.log(response, 'success') // 成功的返回
           })
           .catch(error => console.log(error, 'error')) // 失败的返回
@@ -306,9 +447,18 @@ export default {
       'status': 1
     })
       .then(response => {
+        console.log(response, 'success') // 成功的返回
         this.data = response.data
         this.pagination.total = response.more.count
-        console.log(response, 'success') // 成功的返回
+        this.count = response.more.count
+        this.free_count = response.more.free_count
+        this.order_count = response.more.order_count
+        this.success_count = response.more.success_count
+
+        this.ChartOptions5.series[0].data = response.item_data.count
+        this.ChartOptions6.series[0].data = response.item_data.free_count
+        this.ChartOptions7.series[0].data = response.item_data.order_count
+        this.ChartOptions8.series[0].data = response.item_data.success_count
       })
       .catch(error => console.log(error, 'error')) // 失败的返回
   }
@@ -359,5 +509,51 @@ span.demonstration {
   width: 110px;
   margin: 0 20px; /* line-height: 50px; */
   background-color: white;
+}
+.head_card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.head_card .card {
+  width: 20%;
+  height: 150px;
+  box-sizing: border-box;
+  padding: 20px 10px;
+  box-shadow: 0 0 10px 1px #e5e5e5;
+  border-radius: 10px;
+}
+.head_card .card .card_top,
+.card_bottom {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card_top .card_title {
+  font-size: 16px;
+  color: #999;
+}
+.card_top .card_text {
+  font-size: 40px;
+  color: #000;
+}
+.card_bottom .card_bg {
+  flex: 1;
+  display: flex;
+  height: 100px;
+}
+.card_bottom .card_bg img {
+  width: 100%;
+}
+.card_content {
+  margin-left: 20px;
+}
+.card_percent,
+.card_lable {
+  font-size: 12px;
+  color: #ccc;
 }
 </style>

@@ -55,6 +55,7 @@
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
              :rowHandle="rowHandle"
+             @row-remove="handleRowRemove"
              @custom-emit-1="viewDetail"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
@@ -65,7 +66,7 @@
 </template>
 
 <script>
-import { getKeywordList } from '@api/keyword'
+import { getKeywordList, deleteKeyword } from '@api/keyword'
 import myImg from '../../../components/myCom/tableImg'
 export default {
   components: {
@@ -187,7 +188,7 @@ export default {
       getKeywordList({
         'start_time': '',
         'end_time': '',
-        'item': '',
+        'item': this.input,
         'page': currentPage,
         'size': 20
       }).then(response => {
@@ -199,6 +200,26 @@ export default {
         console.log('err', err)
         this.loading = false
       })
+    },
+    handleRowRemove ({ index, row }, done) {
+      setTimeout(() => {
+        console.log(index)
+        console.log(row)
+        deleteKeyword({
+          'id': Array.of(row.id)
+        })
+          .then(response => {
+            this.pagination.total = this.pagination.total - 1
+            console.log(response, 'success') // 成功的返回
+          })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+        done()
+      }, 300)
     },
     exportExcel () {
       console.log(this.columns, this.data)
@@ -223,6 +244,7 @@ export default {
       })
         .then(response => {
           this.data = response.data
+          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -243,6 +265,7 @@ export default {
       })
         .then(response => {
           this.data = response.data
+          this.pagination.total = response.count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回

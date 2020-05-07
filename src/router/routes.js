@@ -127,7 +127,7 @@ const frameIn = [
         }
       },
       {
-        path: 'resourceRecommend',
+        path: '/resourceRecommend',
         name: 'resourceRecommend',
         component: _import('pages/resource/recommend'),
         meta: {
@@ -136,7 +136,16 @@ const frameIn = [
         }
       },
       {
-        path: 'order',
+        path: '/resourceManage',
+        name: 'resourceManage',
+        component: _import('pages/resource'),
+        meta: {
+          auth: true,
+          title: '资源管理'
+        }
+      },
+      {
+        path: '/order',
         name: 'order',
         component: _import('pages/order'),
         meta: {
@@ -154,7 +163,7 @@ const frameIn = [
         }
       },
       {
-        path: 'cash',
+        path: '/cash',
         name: 'cash',
         component: _import('pages/cash'),
         meta: {
@@ -163,7 +172,7 @@ const frameIn = [
         }
       },
       {
-        path: 'transmit',
+        path: '/transmit',
         name: 'transmit',
         component: _import('pages/transmit'),
         meta: {
@@ -172,7 +181,7 @@ const frameIn = [
         }
       },
       {
-        path: 'invite',
+        path: '/invite',
         name: 'invite',
         component: _import('pages/invite'),
         meta: {
@@ -181,7 +190,7 @@ const frameIn = [
         }
       },
       {
-        path: 'chat',
+        path: '/chat',
         name: 'chat',
         component: _import('pages/chat/customer'),
         meta: {
@@ -190,7 +199,7 @@ const frameIn = [
         }
       },
       {
-        path: 'group',
+        path: '/group',
         name: 'group',
         component: _import('pages/chat/group'),
         meta: {
@@ -199,7 +208,7 @@ const frameIn = [
         }
       },
       {
-        path: 'report',
+        path: '/report',
         name: 'report',
         component: _import('pages/report'),
         meta: {
@@ -208,7 +217,7 @@ const frameIn = [
         }
       },
       {
-        path: 'sign',
+        path: '/sign',
         name: 'sign',
         component: _import('pages/sign'),
         meta: {
@@ -217,7 +226,7 @@ const frameIn = [
         }
       },
       {
-        path: 'car',
+        path: '/car',
         name: 'car',
         component: _import('pages/car'),
         meta: {
@@ -226,7 +235,7 @@ const frameIn = [
         }
       },
       {
-        path: 'help',
+        path: '/help',
         name: 'help',
         component: _import('pages/help'),
         meta: {
@@ -235,7 +244,7 @@ const frameIn = [
         }
       },
       {
-        path: 'keyword',
+        path: '/keyword',
         name: 'keyword',
         component: _import('pages/keyword'),
         meta: {
@@ -244,7 +253,16 @@ const frameIn = [
         }
       },
       {
-        path: 'platform',
+        path: '/sensitive',
+        name: 'sensitive',
+        component: _import('pages/sensitive'),
+        meta: {
+          auth: true,
+          title: '敏感词管理'
+        }
+      },
+      {
+        path: '/platform',
         name: 'Pplatform',
         component: _import('pages/platform/platform'),
         meta: {
@@ -253,7 +271,7 @@ const frameIn = [
         }
       },
       {
-        path: 'manager',
+        path: '/manager',
         name: 'Pmanager',
         component: _import('pages/platform/manager'),
         meta: {
@@ -262,7 +280,7 @@ const frameIn = [
         }
       },
       {
-        path: 'manager',
+        path: '/manager',
         name: 'Pmanager',
         component: _import('pages/platform/manager'),
         meta: {
@@ -271,7 +289,7 @@ const frameIn = [
         }
       },
       {
-        path: 'message',
+        path: '/message',
         name: 'Pmessage',
         component: _import('pages/platform/message'),
         meta: {
@@ -280,7 +298,7 @@ const frameIn = [
         }
       },
       {
-        path: 'name',
+        path: '/name',
         name: 'Pname',
         component: _import('pages/platform/name'),
         meta: {
@@ -289,7 +307,7 @@ const frameIn = [
         }
       },
       {
-        path: 'settings',
+        path: '/settings',
         name: 'settings',
         component: _import('pages/settings'),
         meta: {
@@ -317,6 +335,11 @@ const frameIn = [
         component: _import('pages/car/detail')
       },
       {
+        path: '/chatDetail',
+        name: 'chatDetail',
+        component: _import('pages/chat/customer/detail')
+      },
+      {
         path: '/userDetail',
         name: 'userDetail',
         component: _import('pages/user/detail')
@@ -332,9 +355,19 @@ const frameIn = [
         component: _import('pages/keyword/detail')
       },
       {
+        path: '/agreementDetail',
+        name: 'agreementDetail',
+        component: _import('pages/agreement/detail')
+      },
+      {
         path: '/orders',
         name: 'orders',
         component: _import('pages/order/order')
+      },
+      {
+        path: '/test',
+        name: 'test',
+        component: _import('pages/platform/message/test')
       }
     ]
   }

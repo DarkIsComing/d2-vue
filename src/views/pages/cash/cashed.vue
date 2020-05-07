@@ -127,7 +127,7 @@ export default {
       },
       options: {
         strip: true,
-        height: '650',
+        height: '600',
         highlightCurrentRow: true,
         defaultSort: {
           prop: 'date',

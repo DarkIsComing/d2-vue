@@ -50,8 +50,8 @@
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
              :rowHandle="rowHandle"
-             @custom-emit-1="viewResource"
-             @custom-emit-2="stopResource"
+             @row-remove="handleRowRemove"
+             @custom-emit-1="viewDetail"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
              :options="options">
@@ -102,13 +102,17 @@ export default {
           title: '行业类目',
           key: 'resource_status',
           filters: [
-            { text: '共享资源', value: '共享资源' },
-            { text: '需求资源', value: '需求资源' },
-            { text: '供给资源', value: '供给资源' },
-            { text: '悬赏资源', value: '悬赏资源' }
+            { text: '注册公司', value: '注册公司' },
+            { text: '财政纳税', value: '财政纳税' },
+            { text: '法律咨询', value: '法律咨询' },
+            { text: '职业规划', value: '职业规划' },
+            { text: '人才服务', value: '人才服务' },
+            { text: '政策解读', value: '政策解读' },
+            { text: '兼职零工', value: '兼职零工' },
+            { text: '共享资源', value: '共享资源' }
           ],
           filterMethod (value, row) {
-            return row.tag === value
+            return row.resource_status === value
           },
           filterPlacement: 'bottom-end'
         }
@@ -209,19 +213,25 @@ export default {
       console.log('选择', selection)
       // for (const i = 0; i < selection.length; i++) { this.select_list.push(selection[i].id) }
     },
-    viewResource ({ index, row }) {
-      console.log('123')
-    },
-    // 单选停用
-    stopResource ({ index, row }) {
-      console.log('选择的一行:', index, row)
-      stopUse(row.id
-      ).then(response => {
-        this.data = response.data
-      }).catch(err => {
-        console.log('err', err)
-        this.loading = false
-      })
+    handleRowRemove ({ index, row }, done) {
+      setTimeout(() => {
+        console.log(index)
+        console.log(row)
+        stopUse({
+          'id': row.id
+        })
+          .then(response => {
+            this.pagination.total = this.pagination.total - 1
+            console.log(response, 'success') // 成功的返回
+          })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+        done()
+      }, 300)
     },
     // 多选停用
     stops () {
@@ -270,6 +280,9 @@ export default {
           console.log('数据:', this.$refs.d2Crud.d2CrudData)
           this.$message('导出表格成功')
         })
+    },
+    viewDetail ({ index, row }) {
+      this.$router.push({ name: 'resourceDetail', query: { 'id': row.resource_id, 'type_status': 0 } })
     },
     query (item) {
       getComplaintList({

@@ -9,12 +9,12 @@ export function getKeywordList (params) {
   })
 }
 
-export function stopUse (params) {
+export function deleteKeyword (params) {
   console.log('传入的参数', params)
   return request({
-    url: '/admin/complaint/',
+    url: '/admin/keyword/',
     method: 'delete',
-    params: { 'id': params }
+    data: params
   })
 }
 

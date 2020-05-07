@@ -3,6 +3,7 @@ import axios from 'axios'
 import { Message } from 'element-ui'
 import util from '@/libs/util'
 
+axios.defaults.withCredentials = true
 // 创建一个错误
 function errorCreate (msg) {
   const error = new Error(msg)

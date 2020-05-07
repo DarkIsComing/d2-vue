@@ -17,3 +17,12 @@ export function getIdcardDetail (params) {
     params: params
   })
 }
+
+export function postId (params) {
+  console.log('传入的参数', params)
+  return request({
+    url: '/admin/user/idcard/detail/',
+    method: 'post',
+    data: params
+  })
+}

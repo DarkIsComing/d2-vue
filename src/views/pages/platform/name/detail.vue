@@ -28,22 +28,37 @@
       <el-divider></el-divider>
       <el-row>
         <el-col :span="6">
-          <div class="grid-content bg-purple"><img :src="postive"></div>
+          <div class="grid-content bg-purple"><img :src="postive"
+                 height="300"
+                 width="300"></div>
           <div class="grid-content bg-purple">身份证正面</div>
         </el-col>
         <el-col :span="6">
-          <div class="grid-content bg-purple-light"><img v-bind:src="negative"></div>
+          <div class="grid-content bg-purple-light"><img v-bind:src="negative"
+                 height="300"
+                 width="300"></div>
           <div class="grid-content bg-purple-light">身份证反面</div>
         </el-col>
         <el-col :span="6">
-          <div class="grid-content bg-purple"><img :src="face"></div>
+          <div class="grid-content bg-purple"><img :src="face"
+                 height="300"
+                 width="300"></div>
           <div class="grid-content bg-purple">人脸识别</div>
         </el-col>
         <el-col :span="6">
-          <div class="grid-content bg-purple-light"><img :src="license"></div>
+          <div class="grid-content bg-purple-light"><img :src="license"
+                 height="300"
+                 width="300"></div>
           <div class="grid-content bg-purple-light">营业执照</div>
         </el-col>
       </el-row>
+      <br>
+      <br>
+      <br>
+      <br>
+      <el-button type="success"
+                 style="display:block;margin:0 auto"
+                 @click="commit">通过审核</el-button>
     </d2-main>
 
     <d2-footer>
@@ -53,7 +68,7 @@
 </template>
 
 <script>
-import { getIdcardDetail } from '@api/name'
+import { getIdcardDetail, postId } from '@api/name'
 export default {
   data () {
     return {
@@ -65,6 +80,15 @@ export default {
       negative: '',
       face: '',
       license: ''
+    }
+  },
+  methods: {
+    commit () {
+      postId({
+        'id': this.$route.query.id
+      }).then(response => {
+        console.log(response, 'success') // 成功的返回
+      }).catch(error => console.log(error, 'error')) // 失败的返回
     }
   },
   mounted: function () {

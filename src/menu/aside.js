@@ -10,6 +10,7 @@ export default [
     title: '资源管理',
     icon: 'shopping-bag',
     children: [
+      { path: '/resourceManage', icon: 'reorder', title: '资源管理' },
       { path: '/company', icon: 'reorder', title: '注册公司' },
       { path: '/finance', icon: 'reorder', title: '财政纳税' },
       { path: '/law', icon: 'reorder', title: '法律咨询' },
@@ -25,7 +26,7 @@ export default [
     title: '订单管理',
     icon: 'shopping-cart',
     children: [
-      { path: '/orders', icon: 'shopping-cart', title: '订单管理' },
+      // { path: '/orders', icon: 'shopping-cart', title: '订单管理' },
       { path: '/order', icon: 'shopping-cart', title: '订单列表' }
     ]
   },
@@ -81,6 +82,11 @@ export default [
     path: '/keyword',
     title: '关键词管理',
     icon: 'asterisk'
+  },
+  {
+    path: '/sensitive',
+    title: '敏感词管理',
+    icon: 'archive'
   },
   {
     title: '平台管理',

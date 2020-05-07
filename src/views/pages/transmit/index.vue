@@ -1,6 +1,41 @@
 <template>
   <d2-container>
-    <template slot="header">
+
+    <div>
+      <h3>转发量</h3>
+      <div style="width:100%;overflow:hidden;">
+        <div class="see_left">
+          <div class="select_box">
+            <el-select v-model="status"
+                       @change="changeMethod"
+                       placeholder="请选择查看方式">
+              <el-option v-for="item in methods"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+          <div class="see_left">
+            <chart ref="chart2"
+                   :options="ChartOptions2"
+                   :auto-resize="true"
+                   width="100%"></chart>
+          </div>
+
+        </div>
+
+        <div class="see_right">
+          <chart ref="chart3"
+                 :options="ChartOptions3"
+                 :auto-resize="true"
+                 width="100%"></chart>
+        </div>
+
+      </div>
+    </div>
+    <el-divider></el-divider>
+    <div>
       <el-button slot="header"
                  style="margin-bottom: 5px"
                  @click="exportExcel">导出</el-button>
@@ -39,7 +74,7 @@
                  type="info"
                  style="margin-bottom: 5px"
                  @click="reset">重置</el-button>
-    </template>
+    </div>
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
@@ -60,7 +95,7 @@
 </template>
 
 <script>
-import { getTransmitList, deleteTransmit } from '@api/transmit'
+import { getTransmitList, deleteTransmit, getTransmitEchart } from '@api/transmit'
 import myImg from '../../../components/myCom/tableImg'
 export default {
   components: {
@@ -68,7 +103,89 @@ export default {
   },
   data () {
     return {
+      methods: [{
+        value: '0',
+        label: '最近7天'
+      }, {
+        value: '1',
+        label: '最近15天'
+      }, {
+        value: '2',
+        label: '最近30天'
+      }],
+      status: '最近7天',
       input: '',
+      ChartOptions2: {
+        color: ['#3398DB'],
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { // 坐标轴指示器，坐标轴触发有效
+            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: 'category',
+            data: [],
+            axisTick: {
+              alignWithLabel: true
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value'
+          }
+        ],
+        series: [
+          {
+            name: '转发量',
+            type: 'bar',
+            barWidth: '40%',
+            data: []
+          }
+        ]
+      },
+      ChartOptions3: {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 10,
+          data: ['供给', '需求', '悬赏', '分享', '提供咨询', '需要咨询']
+        },
+        series: [
+          {
+            name: '访问来源',
+            type: 'pie',
+            radius: ['50%', '70%'],
+            avoidLabelOverlap: false,
+            label: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: '30',
+                fontWeight: 'bold'
+              }
+            },
+            labelLine: {
+              show: false
+            },
+            data: []
+          }
+        ]
+      },
       columns: [
         {
           title: '转发时间',
@@ -179,13 +296,10 @@ export default {
   },
   methods: {
     handleSelectionChange (selection) {
-      console.log('选择', selection)
       this.sels = selection
     },
     stop () {
-      console.log(this.sels, typeof (this.sels))
       let ids = this.sels.map(item => item.id)
-      console.log('ids:', ids, typeof (ids))
       this.$confirm('确认删除选中记录吗？', '提示', {
         type: 'warning'
       })
@@ -295,9 +409,10 @@ export default {
         console.log(index)
         console.log(row)
         deleteTransmit({
-          'id': index
+          'id': [row.id]
         })
           .then(response => {
+            this.pagination.total = this.pagination.total - 1
             console.log(response, 'success') // 成功的返回
           })
           .catch(error => console.log(error, 'error')) // 失败的返回
@@ -314,6 +429,19 @@ export default {
         message: '打开模态框，模式为：' + mode,
         type: 'success'
       })
+    },
+    changeMethod () {
+      console.log('啦啦啦啦啦', this.status)
+      getTransmitEchart({
+        'status': parseInt(this.status)
+      }).then(response => {
+        let date = response.data.chart.map(obj => { return obj.date })
+        let count = response.data.chart.map(obj => { return obj.count })
+        this.ChartOptions2.xAxis[0].data = date
+        this.ChartOptions2.series[0].data = count
+        console.log(response, 'success') // 成功的返回
+      })
+        .catch(error => console.log(error, 'error')) // 失败的返回
     }
   },
 
@@ -331,6 +459,18 @@ export default {
         this.pagination.total = response.count
         console.log(response, 'success') // 成功的返回
       })
+      .catch(error => console.log(error, 'error')) // 失败的返回
+
+    getTransmitEchart({
+      'status': 0
+    }).then(response => {
+      this.ChartOptions3.series[0].data = response.data.rate
+      let date = response.data.chart.map(obj => { return obj.date })
+      let count = response.data.chart.map(obj => { return obj.count })
+      this.ChartOptions2.xAxis[0].data = date
+      this.ChartOptions2.series[0].data = count
+      console.log(response, 'success') // 成功的返回
+    })
       .catch(error => console.log(error, 'error')) // 失败的返回
   }
 }
@@ -379,5 +519,14 @@ span.demonstration {
   width: 110px;
   margin: 0 20px; /* line-height: 50px; */
   background-color: white;
+}
+.see_left {
+  float: left;
+}
+.see_right {
+  float: right;
+}
+.select_box {
+  float: right;
 }
 </style>

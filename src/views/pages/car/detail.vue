@@ -37,23 +37,68 @@
             </div>
           </div>
         </template>
+
         <template slot="paneR">
-          <SplitPane :default-percent='20'
+          <SplitPane :default-percent='30'
                      split="horizontal">
             <template slot="paneL">
+              <SplitPane :default-percent='40'
+                         split="horizontal">
+                <template slot="paneL">
+                  <div style="margin: 20px;"
+                       class='up'>
 
-              <div class='up'>
-                <h3>{{title}}</h3>
-                <el-row style="color:#999">
-                  <el-col :span="6">{{create_time}}</el-col>
-                  <el-col :span="6">{{show_count}}</el-col>
-                  <el-col :span="6">0</el-col>
-                  <el-col :span="6">{{business_choice}}</el-col>
-                </el-row>
-              </div>
+                    <div style="float: left;"> <span>到</span>
+                      <h3>{{end_area}} </h3><span>途径</span>
+                      <h3>{{middle_area}}</h3>
+                    </div>
+                    <el-row style="color:#999">
+                      <el-col :span="6">{{create_time}}</el-col>
+                      <el-col :span="6">{{look_count}}</el-col>
+                      <el-col :span="6">{{car_type_text}}</el-col>
+                    </el-row>
+                  </div>
+                </template>
+                <template slot="paneR">
+                  <div style="margin: 10px;">
+                    <div class='left'>
 
+                      <div class="title_left">
+                        <div class="title_item">
+                          <div class="title_text">{{count}}</div>
+                          <div class="title_lable">可载人数</div>
+                        </div>
+                        <div class="title_item">
+                          <div class="title_text">{{order_count}}</div>
+                          <div class="title_lable">沟通人数</div>
+                        </div>
+                        <div class="title_item">
+                          <div class="title_text">{{car_number}} {{car_model}}</div>
+                          <div class="title_lable">车牌号</div>
+                        </div>
+                        <div class="title_item">
+                          <div class="title_text">{{pay_status}}</div>
+                          <div class="title_lable">是否收费</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class='right'>
+                      <el-row>
+                        {{map}}
+                      </el-row>
+                      <el-row>
+                        {{create_time}}
+                      </el-row>
+                    </div>
+                  </div>
+                </template>
+              </SplitPane>
             </template>
             <template slot="paneR">
+              <div style="height:100%;overflow:auto"
+                   class='notes'
+                   v-html="notes">
+              </div>
             </template>
 
           </SplitPane>
@@ -73,18 +118,20 @@ export default {
       use_name: '',
       user_image: '',
       // 右边1
+      type_status: '',
       title: '',
       create_time: '',
-      type_status_text: '',
-      show_count: '',
-
+      car_type_text: '',
+      look_count: '',
+      order_count: '',
       // 右边2
-      amount: '',
+      middle_area: '',
+      end_area: '',
+      pay_status: '',
+      notes: '',
       count: '',
-      unit: '',
-      business_choice: '',
-      year: '',
-      gender: '',
+      car_number: '',
+      car_model: '',
       map: '',
 
 
@@ -134,21 +181,23 @@ export default {
         this.use_name = response.data.use_name
         this.user_image = process.env.VUE_APP_API + response.data.car_image
 
-        this.create_time = response.data.detail.create_time
-        this.show_count = response.data.detail.show_count
-        this.type_status_text = response.data.detail.type_status_text
+        this.end_area = response.data.end_area
+        this.middle_area = response.data.middle_area
+        this.create_time = response.data.create_time
+        this.look_count = response.data.look_count
+        this.car_type_text = response.data.car_type_text
 
-        this.amount = response.data.detail.amount
-        this.count = response.data.detail.count
-        this.unit = response.data.detail.unit
-        this.business_choice = response.data.detail.business_choice
-        this.year = response.data.detail.year
-        this.gender = response.data.detail.gender
-        this.map = response.data.detail.map
+        this.order_count = response.data.order_count
+        this.count = response.data.count
+        this.pay_status = response.data.pay_status
+        this.car_model = response.data.car_model
+        this.notes = response.data.notes
+        this.car_number = response.data.car_number
+        this.map = response.data.map
 
         // this.imgUrl = response.data.resource_images
         this.data = response.side_list
-        this.pagination.total = response.count
+        this.pagination.total = response.side_count
       })
       .catch(error => console.log(error, 'error')) // 失败的返回
   },
@@ -164,7 +213,7 @@ export default {
         .then(response => {
           this.data = response.side_list
           this.type_status = key
-          this.pagination.total = response.count
+          this.pagination.total = response.side_count
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
@@ -180,13 +229,22 @@ export default {
         'status': this.type_status
       })
         .then(response => {
+          this.end_area = response.data.end_area
+          this.middle_area = response.data.middle_area
+          this.create_time = response.data.create_time
+          this.look_count = response.data.look_count
+          this.car_type_text = response.data.car_type_text
+
+          this.order_count = response.data.order_count
+          this.count = response.data.count
+          this.pay_status = response.data.pay_status
+          this.car_model = response.data.car_model
+          this.notes = response.data.notes
+          this.car_number = response.data.car_number
+          this.map = response.data.map
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
-    },
-    getIndex (imgUrl) {
-      console.log('getINDex:', imgUrl)
-      this.ImgUrl = imgUrl
     }
   }
 }

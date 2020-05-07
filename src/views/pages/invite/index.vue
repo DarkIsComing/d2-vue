@@ -2,12 +2,14 @@
   <d2-container>
     <template slot="header">
       <el-button slot="header"
+                 type="primary"
                  style="margin-bottom: 5px"
                  @click="exportExcel">导出</el-button>
 
       <el-button slot="header"
+                 type="danger"
                  style="margin-bottom: 5px"
-                 @click="stop">停用</el-button>
+                 @click="stops">刪除</el-button>
       <span class="demonstration"
             slot="header"
             style="margin-bottom: 5px">邀请时间</span>
@@ -43,19 +45,13 @@
     <d2-crud ref="d2Crud"
              :columns="columns"
              :data="data"
-             add-title="新增广告"
-             :add-template="addTemplate"
-             :form-options="formOptions"
-             @dialog-open="handleDialogOpen"
-             @row-add="handleRowAdd"
-             @dialog-cancel="handleDialogCancel"
              :loading="loading"
              :loading-options="loadingOptions"
              selection-row
              @selection-change="handleSelectionChange"
              @current-change="handleCurrentChange"
              :rowHandle="rowHandle"
-             @custom-emit-1="handleCustomEvent"
+             @row-remove="handleRowRemove"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
              :options="options">
@@ -65,7 +61,7 @@
 </template>
 
 <script>
-import { getInviteList } from '@api/invite'
+import { getInviteList, deleteInvite } from '@api/invite'
 import myImg from '../../../components/myCom/tableImg'
 export default {
   components: {
@@ -144,14 +140,12 @@ export default {
       },
       // 自定义操作列
       rowHandle: {
-        custom: [
-          {
-            text: '删除',
-            type: 'danger ',
-            size: 'small',
-            emit: 'custom-emit-1'
-          }
-        ]
+        remove: {
+          icon: 'el-icon-delete',
+          size: 'small',
+          fixed: 'right',
+          confirm: true
+        }
       },
       pickerOptions: {
         shortcuts: [{
@@ -181,12 +175,35 @@ export default {
         }]
       },
       value1: '',
-      value2: ''
+      value2: '',
+      sels: []
     }
   },
   methods: {
+    handleRowRemove ({ index, row }, done) {
+      setTimeout(() => {
+        console.log(index)
+        console.log(row)
+        let ids = Array.of(row.id)
+        deleteInvite({
+          'id': ids
+        })
+          .then(response => {
+            this.pagination.total = this.pagination.total - ids.length
+            console.log(response, 'success') // 成功的返回
+          })
+          .catch(error => console.log(error, 'error')) // 失败的返回
+
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+        done()
+      }, 300)
+    },
     handleSelectionChange (selection) {
       console.log('选择', selection)
+      this.sels = selection
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage
@@ -209,6 +226,37 @@ export default {
         console.log('err', err)
         this.loading = false
       })
+    },
+    stops () {
+      console.log(this.sels, typeof (this.sels))
+      let ids = this.sels.map(item => item.id)
+      console.log('ids:', ids, typeof (ids))
+      this.$confirm('确认删除选中记录吗？', '提示', {
+        type: 'warning'
+      })
+        .then(() => {
+          const para = { 'id': ids }
+          deleteInvite(para).then(res => {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            getInviteList({
+              'start_time': '',
+              'end_time': '',
+              'item': '',
+              'page': 1,
+              'size': 20
+            })
+              .then(response => {
+                this.data = response.data
+                this.pagination.total = response.count
+                console.log(response, 'success') // 成功的返回
+              })
+              .catch(error => console.log(error, 'error')) // 失败的返回
+          })
+        })
+        .catch(() => { })
     },
     exportExcel () {
       console.log(this.columns, this.data)
@@ -253,17 +301,6 @@ export default {
           console.log(response, 'success') // 成功的返回
         })
         .catch(error => console.log(error, 'error')) // 失败的返回
-    },
-    addRow () {
-      this.$refs.d2Crud.showDialog({
-        mode: 'add'
-      })
-    },
-    handleDialogOpen ({ mode }) {
-      this.$message({
-        message: '打开模态框，模式为：' + mode,
-        type: 'success'
-      })
     }
   },
 

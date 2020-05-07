@@ -5,9 +5,6 @@
                  style="margin-bottom: 5px"
                  @click="exportExcel">导出</el-button>
 
-      <el-button slot="header"
-                 style="margin-bottom: 5px"
-                 @click="stop">停用</el-button>
       <span class="demonstration"
             slot="header"
             style="margin-bottom: 5px">最近聊天时间</span>
@@ -50,7 +47,7 @@
              @current-change="handleCurrentChange"
              :rowHandle="rowHandle"
              @row-remove="handleRowRemove"
-             @custom-emit-1="handleCustomEvent"
+             @custom-emit-1="viewDetail"
              :pagination="pagination"
              @pagination-current-change="paginationCurrentChange"
              :options="options">
@@ -72,7 +69,7 @@ export default {
       columns: [
         {
           title: '最近聊天时间',
-          key: 'create_time',
+          key: 'last_time',
           width: '180',
           sortable: true
         },
@@ -94,7 +91,7 @@ export default {
         },
         {
           title: '聊天用户数',
-          key: 'amount'
+          key: 'chat_count'
         }
       ],
       outCoulum: [
@@ -145,13 +142,7 @@ export default {
             size: 'small',
             emit: 'custom-emit-1'
           }
-        ],
-        remove: {
-          icon: 'el-icon-delete',
-          size: 'small',
-          fixed: 'right',
-          confirm: true
-        }
+        ]
       },
       pickerOptions: {
         shortcuts: [{
@@ -200,8 +191,7 @@ export default {
         'end_time': '',
         'item': '',
         'page': currentPage,
-        'size': 20,
-        'rank': ''
+        'size': 20
       }).then(response => {
         this.data = response.data
         this.pagination.total = response.count
@@ -210,6 +200,9 @@ export default {
         console.log('err', err)
         this.loading = false
       })
+    },
+    viewDetail ({ index, row }) {
+      this.$router.push({ name: 'chatDetail', query: { 'id': row.id } })
     },
     exportExcel () {
       console.log(this.columns, this.data)
@@ -230,8 +223,7 @@ export default {
         'end_time': this.value2[1],
         'item': this.input,
         'page': 1,
-        'size': 20,
-        'rank': ''
+        'size': 20
       })
         .then(response => {
           this.data = response.data
@@ -249,8 +241,7 @@ export default {
         'end_time': '',
         'item': this.input,
         'page': 1,
-        'size': 20,
-        'rank': ''
+        'size': 20
       })
         .then(response => {
           this.data = response.data
@@ -286,8 +277,7 @@ export default {
       'end_time': '',
       'item': '',
       'page': 1,
-      'size': 20,
-      'rank': ''
+      'size': 20
     })
       .then(response => {
         this.data = response.data

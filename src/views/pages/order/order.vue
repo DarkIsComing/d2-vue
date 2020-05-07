@@ -18,6 +18,7 @@
             <div class="block">
               <span class="demonstration">日期：</span>
               <el-date-picker v-model="value1"
+                              value-format="yyyy-MM-dd"
                               type="date"
                               placeholder="选择日期">
               </el-date-picker>
@@ -44,6 +45,7 @@
               <div class="block">
                 <span class="demonstration">日期：</span>
                 <el-date-picker v-model="value2"
+                                value-format="yyyy-MM-dd"
                                 type="date"
                                 placeholder="选择日期">
                 </el-date-picker>
@@ -73,6 +75,7 @@
               <div class="block">
                 <span class="demonstration">日期：</span>
                 <el-date-picker v-model="value3"
+                                value-format="yyyy-MM-dd"
                                 type="date"
                                 placeholder="选择日期">
                 </el-date-picker>
