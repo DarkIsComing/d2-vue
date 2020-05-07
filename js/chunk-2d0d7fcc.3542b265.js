@@ -1,0 +1,1 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d0d7fcc"],{"78c8":function(n,c,o){n.exports=o.p+"fonts/Inter-Italic.1e32497f.woff2"}}]);

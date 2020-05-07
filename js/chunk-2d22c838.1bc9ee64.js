@@ -1,0 +1,1 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d22c838"],{f40d:function(n,o,e){n.exports=e.p+"fonts/Inter-SemiBold.de3f13e0.woff2"}}]);

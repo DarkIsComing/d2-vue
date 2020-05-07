@@ -1,0 +1,1 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d20ede4"],{b0cc:function(n,o,e){n.exports=e.p+"fonts/Inter-Bold.be76611f.woff2"}}]);

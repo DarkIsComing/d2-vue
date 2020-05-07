@@ -1,0 +1,1 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d22d7c4"],{f862:function(n,o,p){n.exports=p.p+"fonts/Inter-Light-BETA.ebd51e87.woff2"}}]);
